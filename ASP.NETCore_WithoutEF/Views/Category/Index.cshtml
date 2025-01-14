@@ -1,0 +1,67 @@
+﻿<div class="row justify-content-center">
+
+    <div class="col-10">
+
+        <div class="alert alert-info" role="alert">
+            Category CRUD
+        </div>
+
+        <button type="button" class="btn btn-success btn-sm btn-new-category"> New Category</button>
+
+        <table class="table table-striped" id="categoryTable">
+            <thead>
+                <tr>
+                    <th>Category Id</th>
+                    <th>Category Name</th>                   
+                    <th>Created Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalLabel">Category Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="cModal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Category Id</label>
+                    <input type="number" class="form-control" id="numId" autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="txtCategory" autocomplete="off">
+                </div>                
+                <div class="mb-3">
+                    <label class="form-label">Created Date</label>
+                    <input type="text" class="form-control" id="dtCreated">
+                </div>                
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="cModal">Close</button>
+                <button type="button" class="btn btn-primary btn-save-changes">Save changes</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/category.js"></script>
+}
