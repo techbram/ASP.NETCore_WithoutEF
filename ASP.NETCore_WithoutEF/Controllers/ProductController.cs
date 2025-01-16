@@ -38,8 +38,8 @@ namespace ASP.NETCore_WithoutEF.Controllers
 
             return StatusCode(StatusCodes.Status200OK, productList);  // Return successful answer          
         }
-       
 
+      
         // Method to Save Product
         [HttpPost]
         public async Task<IActionResult> SaveProduct([FromBody] Product model)
@@ -73,9 +73,18 @@ namespace ASP.NETCore_WithoutEF.Controllers
 
         }
 
+        // Action to view the product details
+        public async Task<IActionResult> Detail(int idProduct)
+        {
+            Product product = await _productRepo.Detail(idProduct);
+            if(product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
 
-
-        // Method httpdelete to delete employee
+        // Method httpdelete to delete Product
         [HttpDelete]
         public async Task<IActionResult> DeleteProduct(int idProduct)
         {

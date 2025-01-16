@@ -30,21 +30,54 @@ namespace ASP.NETCore_WithoutEF.Controllers
 
         // Method HttpPost to save the Category
         [HttpPost]
-        public async Task<IActionResult> SaveCategory([FromBody] Category cModel)
+        public async Task<IActionResult> SaveCategory([FromBody] Category model)
         {
-            bool _result = await _categoryRepo.Save(cModel);
+            bool _result = await _categoryRepo.Save(model);
 
             if (_result)
             {
                 return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
-                
-            }
 
+            }
             else
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
             }
 
+        }
+
+        //Method to Edit Category
+        [HttpPut]
+        public async Task<IActionResult> EditCategory([FromBody] Category model)
+        {
+            bool _result = await _categoryRepo.Edit(model);
+
+            if (_result)
+            {
+                return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+            }
+
+        }
+
+        // Method httpdelete to delete Category
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCategory(int idCategory)
+        {
+
+            bool _result = await _categoryRepo.Delete(idCategory);
+
+            if (_result)
+            {
+                return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+            }
         }
 
     }

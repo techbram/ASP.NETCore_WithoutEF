@@ -1,4 +1,4 @@
-﻿alert("Hello, World!"); 
+﻿/*alert("Hello, World!"); */
 // Product Modal
 const _productModel = {
     Id: 0,
@@ -29,11 +29,16 @@ function ProductsShow() {
                     // Append new row to the table
                     $("#productsTable tbody").append(
                         $("<tr>").append(
-                            $("<td>").text(product.productName),
+                            $("<td>").append(
+                                $("<a>").attr("href", `/Product/Detail?idProduct=${product.id}`) 
+                                    .text(product.productName)
+                                    .data("productData", product)
+                            ),
+                            /*$("<td>").text(product.productName),*/
                             $("<td>").text(product.categoryRef.name),
                             $("<td>").text(product.price),  //Formate price to 2 decimal places
-                            $("<td>").text(product.imageUrl),
-                            $("<td>").text(product.productDetail),
+                            //$("<td>").text(product.imageUrl),
+                            //$("<td>").text(product.productDetail),
                             $("<td>").text(product.discountPrice),
                             $("<td>").text(product.dateAdded),
                             $("<td>").append(
@@ -60,7 +65,7 @@ function ProductsShow() {
 // Function to get category name for product table
 document.addEventListener("DOMContentLoaded", function () {
 
-    alert("Product with category Show!");
+   /* alert("Product with category Show!");*/
 
     ProductsShow();
 
@@ -97,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
  //Function to Show modal
 function ModalShow() {
-    /* alert("category Show!");*/
+   
     $("#txtName").val(_productModel.ProductName);   
     $("#selectCategory").val(_productModel.CategoryRef == 0 ? $("#selectCategory option:first").val() : _productModel.CategoryRef);
     $("#numPrice").val(_productModel.Price);
@@ -105,8 +110,7 @@ function ModalShow() {
     $("#numDiscount").val(_productModel.DiscountPrice);
     $("#dtAddedDate").val(_productModel.DateAdded);
     $("#textImage").val(_productModel.ImageUrl);
-    /*$("#txtContractDate").val(_employeeModel.contractDate);*/
-
+   
     $("#productModal").modal("show");
 }
 
@@ -194,7 +198,7 @@ $(document).on("click", ".btn-save-changes", function () {
                 if (responseJson.value) {
                     $("#productModal").modal("hide");
                     Swal.fire("Done", "The product was edited successfully", "success");
-                    EmployeesShow();
+                    ProductsShow();
                 } else {
                     Swal.fire("Error", "The user product not be edited", "error");
                 }
@@ -209,7 +213,7 @@ $(document).on("click", ".btn-delete-product", function () {
 
     Swal.fire({
         title: "Are you sure?",
-        text: `Delete employee "${_product.productName}"`,
+        text: `Delete product "${_product.productName}"`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -232,7 +236,7 @@ $(document).on("click", ".btn-delete-product", function () {
                         ProductsShow();
                     }
                     else {
-                        Swal.fire("Error!", "The emplproductoyee could not be edited", "error");
+                        Swal.fire("Error!", "The product could not be edited", "error");
                     }
                 })
         }

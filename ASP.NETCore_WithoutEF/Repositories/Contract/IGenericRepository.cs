@@ -9,7 +9,7 @@
         Task<bool> Edit(T model);
 
         Task<bool> Delete(int id);
-
+        Task<T> Detail(int id);
     }
     
 }

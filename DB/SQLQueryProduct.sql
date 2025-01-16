@@ -266,6 +266,19 @@ GO
 --	Where p_id = @p_id
 --end
 
+----------->>>>>>>>>>>>>>>sp_detailProduct
+CREATE PROCEDURE sp_detailProduct(
+@p_id int
+)
+AS
+BEGIN
+	SELECT p_id, p_name, c_id, c_name, Price, ImageUrl, ProductDetail, DiscountPrice
+	FROM Product
+	WHERE p_id = @p_id
+END
+GO
+EXEC sp_detailProduct 8
+
 
 -->>>>>>>>>>>>>>>sp_deleteProdduct
 

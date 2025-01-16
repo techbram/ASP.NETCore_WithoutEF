@@ -6,8 +6,7 @@ namespace ASP.NETCore_WithoutEF.Models
     {
         public int Id { get; set; }
         public string? Name { get; set; }   
-        public string? CreatedDate { get; set; }
-            
-
+        public string? CreatedDate { get; set; }            
+        public int  DisplayOrder {  get; set; }
     }
 }

@@ -32,21 +32,6 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                 {
                     while (await dr.ReadAsync())
                     {
-                        //Employee objEmployee = new Employee();
-                        //objEmployee.id = Convert.ToInt32(dr["e_id"]);
-                        //objEmployee.name = dr["e_name"].ToString();
-
-                        //    Department objDepartment = new Department();
-                        //    objDepartment.id = Convert.ToInt32(dr["d_id"]);
-                        //    objDepartment.name = dr["d_name"].ToString();
-                        //    objEmployee.departmentRef = objDepartment;
-
-                        //objEmployee.salary = Convert.ToInt32(dr["salary"]);
-                        //objEmployee.contractDate = dr["contract_date"].ToString();
-
-                        //productList.Add(objEmployee);
-
-
                         productList.Add(new Product
                             {
                                 Id = Convert.ToInt32(dr["p_id"]),
@@ -71,6 +56,7 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
             }
             return productList;
         }
+       
         public async Task<bool> Save(Product model)
         {
             using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
@@ -97,6 +83,7 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                 else { return false; }
             }
         }
+
         public async Task<bool> Edit(Product model)
         {
             using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
@@ -124,6 +111,47 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                 if (affected_rows > 0) { return true; }        // return type is bool(true OR false) 
                 else { return false; }
             }
+        }
+        public async Task<Product> Detail(int id)
+        {
+            //Product product = new Product();
+           Product product = null;             // return null if no prodduct is found
+
+            using (SqlConnection con = new SqlConnection(_SQLString))
+            {
+                //con.Open();
+                await con.OpenAsync();
+
+                SqlCommand cmd = new SqlCommand("sp_detailProduct", con);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;   //Specify command type                
+                cmd.Parameters.AddWithValue("@p_id", id);    //  the stored procedure takes a parameter like @p_id
+
+                SqlDataReader dr = await cmd.ExecuteReaderAsync();
+
+                if (dr.HasRows)
+                {
+                    while (await dr.ReadAsync())
+                    {
+                        product = new Product
+                        {
+                            Id = Convert.ToInt32(dr["p_id"]),  
+                            ProductName = dr["p_name"].ToString(), 
+                            CategoryRef = new Category
+                            {
+                                Id = Convert.ToInt32(dr["c_id"]),
+                                Name = dr["c_name"].ToString()
+                            },
+                            Price = Convert.ToDecimal(dr["Price"]), 
+                            ImageUrl = dr["ImageUrl"].ToString(),   
+                            DiscountPrice = Convert.ToDecimal(dr["DiscountPrice"]), 
+                            ProductDetail = dr["ProductDetail"].ToString()  
+                            
+                        };
+                    }
+                }
+            }
+            return product;
         }
         public async Task<bool> Delete(int id)
         {

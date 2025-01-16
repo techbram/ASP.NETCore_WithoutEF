@@ -1,0 +1,28 @@
+﻿
+@model Product
+@{
+    ViewData["Title"] = "ProductDetails";
+}
+<input asp-for="Id" hidden />
+
+<h3>@Model.ProductName</h3>
+
+<div>
+    <strong>Category:</strong> @Model.CategoryRef.Name
+</div>
+<div>
+    <strong>Price:</strong> @Model.Price.ToString("C2")  <!-- Formats price as currency -->
+</div>
+<div>
+    <strong>Discount Price:</strong> @Model.DiscountPrice.ToString("C2")
+</div>
+<div>
+    <strong>Product Details:</strong> @Model.ProductDetail
+</div>
+<div>
+    <strong>Image:</strong> @Model.ImageUrl
+</div>
+
+<!-- You can add more details here, like an image, description, etc. -->
+<!-- Link to go back to the product list or another page -->
+<a href="/Product/Index">Back to Product List</a>

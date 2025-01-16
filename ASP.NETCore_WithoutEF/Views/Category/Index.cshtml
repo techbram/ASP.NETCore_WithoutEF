@@ -10,9 +10,9 @@
 
         <table class="table table-striped" id="categoryTable">
             <thead>
-                <tr>
-                    <th>Category Id</th>
-                    <th>Category Name</th>                   
+                <tr>                    
+                    <th>Category Name</th> 
+                    <th>Display Order</th>
                     <th>Created Date</th>
                     <th>Action</th>
                 </tr>
@@ -27,7 +27,7 @@
 
 </div>
 
-<!-- Modal -->
+<!--Category Modal -->
 
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
 
@@ -36,26 +36,28 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="categoryModalLabel">Category Modal</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="cModal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Category Id</label>
-                    <input type="number" class="form-control" id="numId" autocomplete="off">
-                </div>
+                
                 <div class="mb-3">
                     <label class="form-label">Category Name</label>
                     <input type="text" class="form-control" id="txtCategory" autocomplete="off">
                 </div>                
                 <div class="mb-3">
+                    <label class="form-label">Display Order</label>
+                    <input type="number" class="form-control" id="displayOrder" autocomplete="off">
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Created Date</label>
                     <input type="text" class="form-control" id="dtCreated">
-                </div>                
+                </div>     
+                
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="cModal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary btn-save-changes">Save changes</button>
             </div>
 

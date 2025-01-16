@@ -2,6 +2,7 @@
 using ASP.NETCore_WithoutEF.Repositories.Contract;
 //using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
+using System.CodeDom;
 
 namespace ASP.NETCore_WithoutEF.Repositories.Implementation
 {
@@ -35,7 +36,8 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                         categoryList.Add(new Category {
                             Id =  Convert.ToInt32(dr["c_id"]),
                             Name = dr["c_name"].ToString(),
-                            CreatedDate = dr["CreatedDate"].ToString()
+                            CreatedDate = dr["CreatedDate"].ToString(),
+                            DisplayOrder = Convert.ToInt32(dr["DisplayOrder"]),
                         });
                     }
                 }
@@ -43,9 +45,26 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
             return categoryList;
 
         }
-        public Task<bool> Edit(Category model)
+        public async Task<bool> Edit(Category model)
         {
-            throw new NotImplementedException();
+            using (SqlConnection con = new SqlConnection(_SQLString)) { 
+
+                con.Open();
+                SqlCommand cmd = new SqlCommand("sp_editCategory", con);
+
+                // Update product
+                cmd.Parameters.AddWithValue("c_id", model.Id);
+                cmd.Parameters.AddWithValue("c_name", model.Name);
+                cmd.Parameters.AddWithValue("DisplayOrder", model.DisplayOrder);
+                cmd.Parameters.AddWithValue("CreatedDate", model.CreatedDate);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;     //Specify command type
+
+                int affected_rows = await cmd.ExecuteNonQueryAsync();
+
+                if (affected_rows > 0) { return true; }
+                else { return false; }
+            }
         }
         public async Task<bool> Save(Category model)
         {
@@ -56,8 +75,9 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                 SqlCommand cmd = new SqlCommand("sp_saveCategory", con);  // Specify command store procedure
 
                 //Add parameter with value
-
+                
                 cmd.Parameters.AddWithValue("c_name", model.Name);
+                cmd.Parameters.AddWithValue("DisplayOrder", model.DisplayOrder);
                 cmd.Parameters.AddWithValue("CreatedDate", model.CreatedDate);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -68,11 +88,30 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
                 else { return false; }
             }
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
+            {
+                conn.Open();                                             // Open Connection
+
+                SqlCommand cmd = new SqlCommand("sp_deleteCategory", conn);  // Specify command store procedure
+
+                cmd.Parameters.AddWithValue("c_id", id);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;    //Specify command type
+
+                int affected_rows = await cmd.ExecuteNonQueryAsync();
+
+                if (affected_rows > 0) { return true; }
+                else { return false; }
+
+            }
+
+        }
+
+        public Task<Category> Detail(int id)
         {
             throw new NotImplementedException();
         }
-
-        
     }
 }
