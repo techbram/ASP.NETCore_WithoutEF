@@ -30,7 +30,7 @@ function ProductsShow() {
                     $("#productsTable tbody").append(
                         $("<tr>").append(
                             $("<td>").append(
-                                $("<a>").attr("href", `/Product/Detail?idProduct=${product.id}`) 
+                                $("<a>").attr("href", `/Product/Detail?id=${product.id}`) 
                                     .text(product.productName)
                                     .data("productData", product)
                             ),
@@ -42,8 +42,8 @@ function ProductsShow() {
                             $("<td>").text(product.discountPrice),
                             $("<td>").text(product.dateAdded),
                             $("<td>").append(
-                                $("<button>").addClass("btn btn-primary btn-sm btn-edit-product").text("Edit").data("productData", product),
-                                $("<button>").addClass("btn btn-danger btn-sm ms-2 btn-delete-product").text("Delete").data("productData", product)
+                                $("<button>").addClass("btn btn-primary btn-sm btn-edit-product ").text("Edit").data("productData", product),
+                                $("<button>").addClass("btn btn-danger btn-sm ms-2 btn-delete-product ").text("Delete").data("productData", product)
                             )
                         )
                     );

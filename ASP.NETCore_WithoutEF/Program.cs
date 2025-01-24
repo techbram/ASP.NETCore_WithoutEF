@@ -1,6 +1,6 @@
 using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
-using ASP.NETCore_WithoutEF.Repositories.Implementation;
+using ASP.NETCore_WithoutEF.Repository.Contract;
+using ASP.NETCore_WithoutEF.Repository.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 

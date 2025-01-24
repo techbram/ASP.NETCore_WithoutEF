@@ -1,6 +1,7 @@
 using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
-using ASP.NETCore_WithoutEF.Repositories.Implementation;
+
+using ASP.NETCore_WithoutEF.Repository.Contract;
+using ASP.NETCore_WithoutEF.Repository.Implementation;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -8,20 +9,35 @@ namespace ASP.NETCore_WithoutEF.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;        
-        
+        private readonly ILogger<HomeController> _logger;
+        private readonly IGenericRepository<Product> _productRepo;
+        private readonly IGenericRepository<Category> _categoryRepo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IGenericRepository<Product> productRepo, IGenericRepository<Category> categoryRepo)
         {
             _logger = logger;
-            
+            _productRepo = productRepo;
+            _categoryRepo = categoryRepo;
         }
 
-        public IActionResult Index()
+        public async Task< IActionResult> Index()
         {
-            return View();
+            List<Product> productList = await _productRepo.List();
+           
+            return View(productList);
         }
 
+
+        // Action to view the product details
+        public async Task<IActionResult> Detail(int id)
+        {
+            Product product = await _productRepo.Detail(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
         public IActionResult Privacy()
         {
             return View();

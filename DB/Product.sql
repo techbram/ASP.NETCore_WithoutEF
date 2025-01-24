@@ -32,6 +32,14 @@ ProductDetail VARCHAR(100),
 DiscountPrice DECIMAL(10,2),
 DateAdded DATE;
 
+
+ALTER TABLE [dbo].[Product]
+ADD
+	[ProductNumber] [nvarchar](max),
+	[Originated] [nvarchar](max) ,
+	[Price50] [float] ,
+	[Price100] [float];
+	
 -- inserting data in to Category table
 insert into Category(c_name) values
 ('MilkProduct'),
@@ -272,13 +280,24 @@ CREATE PROCEDURE sp_detailProduct(
 )
 AS
 BEGIN
-	SELECT p_id, p_name, c_id, c_name, Price, ImageUrl, ProductDetail, DiscountPrice
-	FROM Product
-	WHERE p_id = @p_id
-END
+	SELECT p.p_id, 
+           p.p_name,
+           c.c_id, 
+           c.c_name,
+           CAST(p.Price AS DECIMAL(10, 2)) AS Price,
+           p.ImageUrl,           -- New column for image URL
+           p.ProductDetail,      -- New column for product details
+           p.DiscountPrice     -- New column for discount price
+		             
+    FROM Product AS p
+    INNER JOIN Category AS c ON p.c_id = c.c_id
+	Where  p.p_id = @p_id
+END;
 GO
-EXEC sp_detailProduct 8
 
+
+EXEC sp_detailProduct 8
+GO
 
 -->>>>>>>>>>>>>>>sp_deleteProdduct
 

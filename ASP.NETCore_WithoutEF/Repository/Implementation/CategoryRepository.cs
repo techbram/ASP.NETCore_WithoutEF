@@ -1,10 +1,10 @@
 ﻿using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
+using ASP.NETCore_WithoutEF.Repository.Contract;
 //using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 using System.CodeDom;
 
-namespace ASP.NETCore_WithoutEF.Repositories.Implementation
+namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
     public class CategoryRepository : IGenericRepository<Category>
     {

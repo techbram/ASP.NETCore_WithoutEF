@@ -1,5 +1,5 @@
 ﻿using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
+using ASP.NETCore_WithoutEF.Repository.Contract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ASP.NETCore_WithoutEF.Controllers
@@ -44,16 +44,24 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveProduct([FromBody] Product model)
         {
-            bool _result = await _productRepo.Save(model);
-
-            if (_result)
+            if (ModelState.IsValid)
             {
-                return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+                bool _result = await _productRepo.Save(model);
+
+                if (_result)
+                {
+                    return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+                }
             }
             else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+                return BadRequest();
             }
+            
         }
 
         //Method to Edit Product
@@ -74,10 +82,10 @@ namespace ASP.NETCore_WithoutEF.Controllers
         }
 
         // Action to view the product details
-        public async Task<IActionResult> Detail(int idProduct)
+        public async Task<IActionResult> Detail(int id)
         {
-            Product product = await _productRepo.Detail(idProduct);
-            if(product == null)
+            Product product = await _productRepo.Detail(id);
+            if (product == null)
             {
                 return NotFound();
             }

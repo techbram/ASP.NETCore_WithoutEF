@@ -1,11 +1,11 @@
 ﻿using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
+using ASP.NETCore_WithoutEF.Repository.Contract;
 using System.Configuration;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Reflection;
 
-namespace ASP.NETCore_WithoutEF.Repositories.Implementation
+namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
     public class ProductRepository : IGenericRepository<Product>
     {
@@ -114,8 +114,8 @@ namespace ASP.NETCore_WithoutEF.Repositories.Implementation
         }
         public async Task<Product> Detail(int id)
         {
-            //Product product = new Product();
-           Product product = null;             // return null if no prodduct is found
+            Product product = new Product();
+           //Product product = null;             // return null if no prodduct is found
 
             using (SqlConnection con = new SqlConnection(_SQLString))
             {

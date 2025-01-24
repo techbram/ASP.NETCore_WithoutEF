@@ -1,4 +1,4 @@
-﻿namespace ASP.NETCore_WithoutEF.Repositories.Contract
+﻿namespace ASP.NETCore_WithoutEF.Repository.Contract
 {
     public interface IGenericRepository<T> where T : class
     {

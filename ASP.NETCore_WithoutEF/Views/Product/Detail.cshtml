@@ -1,28 +1,50 @@
-﻿
-@model Product
+﻿@model Product
 @{
     ViewData["Title"] = "ProductDetails";
 }
 <input asp-for="Id" hidden />
+<div class="container row">
+    <div class="col-12">
+        <h3 class="text-center">@Model.ProductName</h3>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-6">
+            <div>
+                <strong>Category:</strong> @Model.CategoryRef.Name
+            </div>
+            <div>
+                <strong>Price:</strong> @Model.Price.ToString("C2")  <!-- Formats price as currency -->
+            </div>
+            <div>
+                <strong>Discount Price:</strong> @Model.DiscountPrice.ToString("C2")
+            </div>
+            <div>
+                <strong>Product Details:</strong> @Model.ProductDetail
+            </div>
+        </div>
+        <div class="col-6">
+            <div>
+                <strong>Image:</strong> @Model.ImageUrl
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 col-md-2 offset-lg-1 pb-1">
+            <a asp-action="Index" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
+                <small>Back to Product List</small>
+            </a>
+        </div>
+    </div>
+    @* <div class="col-12">
+        <a href="/Product/Index">Back to Product List</a>
+    </div> *@
+</div>
 
-<h3>@Model.ProductName</h3>
 
-<div>
-    <strong>Category:</strong> @Model.CategoryRef.Name
-</div>
-<div>
-    <strong>Price:</strong> @Model.Price.ToString("C2")  <!-- Formats price as currency -->
-</div>
-<div>
-    <strong>Discount Price:</strong> @Model.DiscountPrice.ToString("C2")
-</div>
-<div>
-    <strong>Product Details:</strong> @Model.ProductDetail
-</div>
-<div>
-    <strong>Image:</strong> @Model.ImageUrl
-</div>
+
+
 
 <!-- You can add more details here, like an image, description, etc. -->
 <!-- Link to go back to the product list or another page -->
-<a href="/Product/Index">Back to Product List</a>
+

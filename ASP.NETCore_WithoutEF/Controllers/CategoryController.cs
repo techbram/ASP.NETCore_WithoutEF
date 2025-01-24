@@ -1,17 +1,17 @@
 ﻿using ASP.NETCore_WithoutEF.Models;
-using ASP.NETCore_WithoutEF.Repositories.Contract;
+using ASP.NETCore_WithoutEF.Repository.Contract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ASP.NETCore_WithoutEF.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly IGenericRepository<Product> _productRepo;
+        
         private readonly IGenericRepository<Category> _categoryRepo;
 
-        public CategoryController(IGenericRepository<Product> productRepo, IGenericRepository<Category> categoryRepo)
+        public CategoryController(IGenericRepository<Category> categoryRepo)
         {
-            _productRepo = productRepo;
+           
             _categoryRepo = categoryRepo;
         }
         public IActionResult Index()
@@ -32,20 +32,30 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveCategory([FromBody] Category model)
         {
-            bool _result = await _categoryRepo.Save(model);
-
-            if (_result)
+            
+            // Check if the model state is valid
+            if (ModelState.IsValid)
             {
-                return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+                // If the model is valid, save the category
+                bool _result = await _categoryRepo.Save(model);
 
+                if (_result)
+                {
+                    return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
+
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+                }
             }
-            else
+            else 
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
+                return BadRequest();
             }
-
+            
         }
-
+        
         //Method to Edit Category
         [HttpPut]
         public async Task<IActionResult> EditCategory([FromBody] Category model)

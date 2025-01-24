@@ -28,8 +28,14 @@ function CategoryListShow() {
                             $("<td>").text(category.displayOrder),
                             $("<td>").text(category.createdDate),
                             $("<td>").append(
-                                $("<button>").addClass("btn btn-primary btn-sm btn-edit-category").text("Edit").data("categorytData", category),
-                                $("<button>").addClass("btn btn-danger btn-sm ms-2 btn-delete-category").text("Delete").data("categoryData", category)
+                                $("<button>").addClass("btn btn-primary btn-sm btn-edit-category")
+                                    .html('<i class="bi bi-pencil-square"></i> Edit')  // Add the icon with the text
+                                    /*.text("Edit")*/
+                                    .data("categorytData", category),
+                                $("<button>").addClass("btn btn-danger btn-sm ms-2 btn-delete-category")
+                                    .html('<i class="bi bi-trash-fill"></i> Edit') 
+                                    /*.text("Delete")*/
+                                    .data("categoryData", category)
                             )
 
                         )
@@ -102,6 +108,36 @@ $(document).on("click", ".btn-edit-category", function () {
 
 // Action for Save and Edit Category
 $(document).on("click", ".btn-save-changes", function () {
+
+    //const name = $("#txtCategory").val().trim();  // Get the trimmed value of the name
+    //const displayOrder = $("#displayOrder").val().trim();  // Get the displayOrder value
+    //const createdDate = $("#dtCreated").val();  // Get created date value
+
+    //let valid = true; // Flag to check if the form is valid
+
+    //// Clear previous error messages
+    //$("#nameError").text('');
+    //$("#displayOrderError").text('');
+
+    //// Validate Name (required)
+    //if (name === "") {
+    //    $("#nameError").text("Name is required.");
+    //    valid = false;
+    //}
+
+    //// Validate Display Order (required and should be a valid number)
+    //if (displayOrder === "") {
+    //    $("#displayOrderError").text("Display order is required.");
+    //    valid = false;
+    //} else if (isNaN(displayOrder) || displayOrder <= 0 || displayOrder >=101) {
+    //    $("#displayOrderError").text("Display order must be between 1 to 100.");
+    //    valid = false;
+    //}
+
+    //// If validation fails, do not send the request
+    //if (!valid) {
+    //    return; // Exit function and do not continue with the fetch request
+    //}
 
     const model = {
         id: _categoryModel.Id,

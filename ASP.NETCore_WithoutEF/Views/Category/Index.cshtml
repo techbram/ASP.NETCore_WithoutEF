@@ -1,31 +1,37 @@
-﻿<div class="row justify-content-center">
+﻿@{
+    ViewData["Title"] = "Category";
+}
 
-    <div class="col-10">
 
-        <div class="alert alert-info" role="alert">
-            Category CRUD
+<div class="row justify-content-center">
+    <div class="container">
+        <div class="row pt-4">
+            <div class="col-6">
+                <h3 class="text-primary">
+                    Category CRUD
+                </h3>
+            </div>
+            <div class="col-6 text-end">
+                <button type="button" class="btn btn-primary btn-new-category">
+                    <i class="bi bi-plus-circle"></i> New Category
+                </button>
+            </div>
         </div>
-
-        <button type="button" class="btn btn-success btn-sm btn-new-category"> New Category</button>
-
-        <table class="table table-striped" id="categoryTable">
+        <table class="table table-striped table-bordered" id="categoryTable">
             <thead>
-                <tr>                    
-                    <th>Category Name</th> 
+                <tr>
+                    <th>Category Name</th>
                     <th>Display Order</th>
                     <th>Created Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
-
             <tbody>
             </tbody>
-
         </table>
-
     </div>
-
 </div>
+
 
 <!--Category Modal -->
 
@@ -40,20 +46,22 @@
             </div>
 
             <div class="modal-body">
-                
+
                 <div class="mb-3">
                     <label class="form-label">Category Name</label>
-                    <input type="text" class="form-control" id="txtCategory" autocomplete="off">
-                </div>                
+                    <input type="text" class="form-control" id="txtCategory" placeholder="Must required" autocomplete="off">
+                   @*  <span id="nameError" style="color: red;"></span> *@
+                </div>
                 <div class="mb-3">
                     <label class="form-label">Display Order</label>
                     <input type="number" class="form-control" id="displayOrder" autocomplete="off">
+                    @* <span id="displayOrderError" style="color: red;"></span> *@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Created Date</label>
                     <input type="text" class="form-control" id="dtCreated">
-                </div>     
-                
+                </div>
+
             </div>
 
             <div class="modal-footer">
@@ -65,5 +73,8 @@
     </div>
 </div>
 @section Scripts {
+  @*   @{
+    <partial name="_ValidationScriptsPartial" />
+    } *@
     <script src="~/js/category.js"></script>
 }
