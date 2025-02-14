@@ -3,12 +3,16 @@
 const _productModel = {
     Id: 0,
     ProductName: "",
+    ProductNumber: "",
+    Originated : "",
     CategoryRef: 0,
-    Price: 0,
-    ImageUrl : "",
     ProductDetail: "",
+    Price: 0,
+    Price50: 0,
+    Price100: 0,
     DiscountPrice: 0,
-    DateAdded: ""   
+    DateAdded: "",
+    ImageUrl: ""
     /*contractDate: ""*/
 }
 
@@ -36,9 +40,7 @@ function ProductsShow() {
                             ),
                             /*$("<td>").text(product.productName),*/
                             $("<td>").text(product.categoryRef.name),
-                            $("<td>").text(product.price),  //Formate price to 2 decimal places
-                            //$("<td>").text(product.imageUrl),
-                            //$("<td>").text(product.productDetail),
+                            $("<td>").text(product.price),  //Formate price to 2 decimal places                           
                             $("<td>").text(product.discountPrice),
                             $("<td>").text(product.dateAdded),
                             $("<td>").append(
@@ -49,7 +51,7 @@ function ProductsShow() {
                     );
                 });
             }
-             //add extra code by my self to catch error
+             //added extra code by my self to catch error
             else {
                 // Optional: Show a message if no products are available
                 $("#productsTable tbody").html("<tr><td colspan='4'>No products found</td></tr>");
@@ -64,9 +66,7 @@ function ProductsShow() {
 
 // Function to get category name for product table
 document.addEventListener("DOMContentLoaded", function () {
-
-   /* alert("Product with category Show!");*/
-
+    
     ProductsShow();
 
     fetch("/Product/GetListCategories")
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert('Failed to load categories');
         });
 
-    $("#dtAddedDate").datepicker({
+    $("#txtDate").datepicker({
         format: "dd/mm/yyyy",
         autoclose: true,
         todayHighlight: true
@@ -103,13 +103,17 @@ document.addEventListener("DOMContentLoaded", function () {
  //Function to Show modal
 function ModalShow() {
    
-    $("#txtName").val(_productModel.ProductName);   
+    $("#txtName").val(_productModel.ProductName);
+    $("#txtProductNum").val(_productModel.ProductNumber);
+    $("#txtOrigin").val(_productModel.Originated);
     $("#selectCategory").val(_productModel.CategoryRef == 0 ? $("#selectCategory option:first").val() : _productModel.CategoryRef);
+    $("#txtDetail").val(_productModel.ProductDetail);
     $("#numPrice").val(_productModel.Price);
-    $("#textDetail").val(_productModel.ProductDetail);
+    $("#numPrice50").val(_productModel.Price50);
+    $("#numPrice100").val(_productModel.Price100);
     $("#numDiscount").val(_productModel.DiscountPrice);
-    $("#dtAddedDate").val(_productModel.DateAdded);
-    $("#textImage").val(_productModel.ImageUrl);
+    $("#txtDate").val(_productModel.DateAdded);
+    $("#txtImage").val(_productModel.ImageUrl);
    
     $("#productModal").modal("show");
 }
@@ -119,9 +123,13 @@ $(document).on("click", ".btn-new-product", function () {
     alert("Product model!")
     _productModel.Id = 0;
     _productModel.ProductName = "";
+    _productModel.ProductNumber = "";
+    _productModel.Originated = "";
     _productModel.CategoryRef = 0;
-    _productModel.Price = 0;
     _productModel.ProductDetail = "";
+    _productModel.Price = 0;
+    _productModel.Price50 = 0;
+    _productModel.Price100 = 0;   
     _productModel.DiscountPrice = 0;
     _productModel.DateAdded = "";
     _productModel.ImageUrl = "";
@@ -136,9 +144,13 @@ $(document).on("click", ".btn-edit-product", function () {
 
     _productModel.Id = _product.id;
     _productModel.ProductName = _product.productName;
+    _productModel.ProductNumber = _product.productNumber;
+    _productModel.Originated = _product.originated;
     _productModel.CategoryRef = _product.categoryRef.id;
-    _productModel.Price = _product.price;
     _productModel.ProductDetail = _product.productDetail;
+    _productModel.Price = _product.price;
+    _productModel.Price50 = _product.price50;
+    _productModel.Price100 = _product.price100;    
     _productModel.DiscountPrice = _product.discountPrice;
     _productModel.DateAdded = _product.dateAdded;
     _productModel.ImageUrl = _product.imageUrl;
@@ -153,14 +165,18 @@ $(document).on("click", ".btn-save-changes", function () {
     const model = {
         id: _productModel.Id,
         productName: $("#txtName").val(),
+        productNumber: $("#txtProductNum").val(),
+        originated: $("#txtOrigin").val(),
         categoryRef: {
             id: $("#selectCategory").val()
         },
+        productDetail: $("#txtDetail").val(),
         price: $("#numPrice").val(),    
-        imageUrl: $("#textImage").val(),
-        productDetail: $("#textDetail").val(),
+        price50: $("#numPrice50").val(),
+        price100: $("#numPrice100").val(),
         discountPrice: $("#numDiscount").val(),
-        dateAdded: $("#dtAddedDate").val()  
+        dateAdded: $("#txtDate").val(),  
+        imageUrl: $("#txtImage").val(),
     }
 
     // To Save

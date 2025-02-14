@@ -25,6 +25,20 @@ CREATE TABLE [dbo].[Companies](
 GO
 
 
+--->>>Insert data in the Companies table
+INSERT INTO [dbo].[Companies]
+           ([Name]
+           ,[StreetAddress]
+           ,[City]
+           ,[State]
+           ,[PostalCode]
+           ,[PhoneNumber])
+     VALUES
+           ('Walmart', '123 Tech St', 'Tech City', 'IL', '12121', '6669990000'),
+		   ('Smart Food', '122 Main St', 'New City', 'IL', '66666', '7779990000'),
+		   ('Insta Cart', '45 Queen St', 'York City', 'IL', '125125', '4561230220')
+GO
+
 --->>>CREATE TABLE ApplicationUsers
 	
 	SET ANSI_NULLS ON
@@ -153,13 +167,112 @@ GO
 ALTER TABLE [dbo].[OrderDetails] CHECK CONSTRAINT [FK_OrderDetails_Product_ProductId]
 GO
 
+-------------------------------STORE PROCEDURE FOR Companies-----------------------
+----->>> sp_getCompanyList
+CREATE PROCEDURE sp_getCompanyList       
+	AS
+	BEGIN
+		SELECT Id, Name, StreetAddress, City, State, PostalCode, PhoneNumber
+		FROM Companies
+	END
+	GO
 
----------------------------------STORE PROCEDURE for shopping Cart------------------
---->>> sp_getCartList
+------>>> sp_editCompany
+CREATE PROCEDURE sp_editCompany
+
+	@Id INT,
+	@Name NVARCHAR(MAX),
+	@StreetAddress NVARCHAR(MAX),
+	@City NVARCHAR(MAX),
+	@State NVARCHAR(MAX),
+	@PostalCode NVARCHAR(MAX),
+	@PhoneNumber NVARCHAR(MAX)
+AS
+BEGIN
+	UPDATE Companies SET
+	
+	Name = @Name,
+	StreetAddress = @StreetAddress ,
+	City = @City ,
+	State = @State ,
+	PostalCode = @PostalCode ,
+	PhoneNumber = @PhoneNumber 
+	WHERE Id = @Id 
+
+END
+GO
+------>>> sp_saveCompany
+CREATE PROCEDURE sp_saveCompany
+
+	@Name NVARCHAR(MAX),
+	@StreetAddress NVARCHAR(MAX),
+	@City NVARCHAR(MAX),
+	@State NVARCHAR(MAX),
+	@PostalCode NVARCHAR(MAX),
+	@PhoneNumber NVARCHAR(MAX)
+AS
+BEGIN
+	INSERT INTO Companies (Name, StreetAddress, City, State, PostalCode, PhoneNumber) 
+	VALUES(@Name, @StreetAddress, @City, @State, @PostalCode, @PhoneNumber)	
+	
+END
+GO
+----------->>>>>>>>>>>>>>>sp_detailCompany
+CREATE PROCEDURE sp_detailCompany
+    @CompanyId INT
+AS
+BEGIN
+    -- Check if the provided CompanyId is valid
+    IF @CompanyId IS NULL OR @CompanyId <= 0
+    BEGIN
+        PRINT 'Invalid Company ID';
+        RETURN;
+    END
+
+    -- Retrieve company details based on the provided CompanyId
+    SELECT 
+        Id,
+        Name,
+        StreetAddress,
+        City,
+        State,
+        PostalCode,
+        PhoneNumber
+    FROM 
+        Companies
+    WHERE 
+        Id = @CompanyId;
+END;
+GO
+
+------>>> sp_deleteCompany
+CREATE PROCEDURE sp_deleteCompany(
+@Id int
+)
+AS
+BEGIN
+	DELETE FROM Companies WHERE Id = @Id
+END
+GO
+
+
+
+---------------------------------STORE PROCEDURE for ApplicationUser------------------
+--->>> sp_getApplicationUser
 	CREATE PROCEDURE sp_getCartList       
 	AS
 	BEGIN
-		SELECT Id, ProductId, Count, ApplicationUserId
-		FROM ShoppingCart
+		SELECT Id, Name, StreetAddress, City, State, PostalCode, PhoneNumber
+		FROM ApplicationUsers
+	END
+	GO
+----------------------sp_detailUser
+CREATE OR ALTER PROCEDURE sp_detailUser   
+@UserId NVARCHAR(450)
+	AS
+	BEGIN
+		SELECT Id AS ApplicationUserId, Name, StreetAddress, City, State, PostalCode, PhoneNumber
+		FROM ApplicationUsers
+		WHERE Id = @UserId
 	END
 	GO

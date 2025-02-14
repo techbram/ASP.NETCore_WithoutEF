@@ -1,4 +1,4 @@
-﻿alert("Show Category");
+﻿
 //Category Modal
 const _categoryModel = {
     Id: 0,
@@ -31,9 +31,9 @@ function CategoryListShow() {
                                 $("<button>").addClass("btn btn-primary btn-sm btn-edit-category")
                                     .html('<i class="bi bi-pencil-square"></i> Edit')  // Add the icon with the text
                                     /*.text("Edit")*/
-                                    .data("categorytData", category),
+                                    .data("categoryData", category),
                                 $("<button>").addClass("btn btn-danger btn-sm ms-2 btn-delete-category")
-                                    .html('<i class="bi bi-trash-fill"></i> Edit') 
+                                    .html('<i class="bi bi-trash-fill"></i> delete') 
                                     /*.text("Delete")*/
                                     .data("categoryData", category)
                             )
@@ -95,7 +95,7 @@ $(document).on("click", ".btn-new-category", function () {
 
 // Show edit product modal on button click
 $(document).on("click", ".btn-edit-category", function () {
-    const _category = $(this).data("categorytData");
+    const _category = $(this).data("categoryData");
 
     _categoryModel.Id = _category.id;
     _categoryModel.Name = _category.name;

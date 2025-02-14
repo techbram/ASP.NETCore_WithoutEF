@@ -1,22 +1,22 @@
 -- Command to create a new database
-create database db_AspNetWithoutEF
+CREATE DATABASE db_AspNetWithoutEF
 
 -- Select database to be used
-use db_AspNetWithoutEF
+USE db_AspNetWithoutEF
 
 -- Create table Category
-create table Category(
-	c_id int primary key identity(1, 1),
-	c_name varchar(50)
+CREATE TABLE Category(
+	c_id INT PRIMARY KEY IDENTITY(1, 1),
+	c_name VARCHAR(50)
 )
 
 
 --Create table Product
-create table Product(
-	p_id int primary key identity(1, 1),
-	p_name varchar(50),
-	c_id int references Category(c_id),
-	Price int	
+CREATE TABLE Product(
+	p_id INT PRIMARY KEY IDENTITY(1, 1),
+	p_name VARCHAR(50),
+	c_id INT REFERENCES Category(c_id),
+	Price INT	
 )
 
 --->>>Change datatype for Price from int to double in Product Table 
@@ -41,7 +41,7 @@ ADD
 	[Price100] [float];
 	
 -- inserting data in to Category table
-insert into Category(c_name) values
+INSERT INTO Category(c_name) VALUES
 ('MilkProduct'),
 ('Produce'),
 ('Bakery'),
@@ -79,53 +79,8 @@ WHERE p_name = 'Whole Wheat Bread';
 
 -->>>>>>>>>>>>>>>>>>>>>>>> Stored Procedures <<<<<<<<<<<<<<<<<<<<<<<
 
--->>>>>>>>>>>>>> sp_listCategories
-create procedure sp_listCategories
-as
-begin
-	select c_id, c_name from Category
-end
-
---create procedure sp_listProducts
---as
---begin	
---	select p.p_id, p.p_name,
---	c.c_id, c.c_name, p.Price	
---	from Product as p
---	inner join Category as c on p.c_id = c.c_id
---end
--->>>>>>>>>>>>>> sp_listProducts with update the datatype of p.Price
---ALTER PROCEDURE sp_listProducts
---AS
---BEGIN
---    SELECT p.p_id, p.p_name,
---           c.c_id, c.c_name, 
---           CAST(p.Price AS DECIMAL(10, 2)) AS Price
---    FROM Product AS p
---    INNER JOIN Category AS c ON p.c_id = c.c_id
---END;
-
--->>>>>>>>>>>>>> Alter sp_listProducts with update newly added columns
---ALTER PROCEDURE sp_listProducts
---AS
---BEGIN
---    SELECT p.p_id, 
---           p.p_name,
---           c.c_id, 
---           c.c_name,
---           CAST(p.Price AS DECIMAL(10, 2)) AS Price,
---           p.ImageUrl,           -- New column for image URL
---           p.ProductDetail,      -- New column for product details
---           p.DiscountPrice,      -- New column for discount price
---           p.DateAdded           -- New column for the date the product was added
---    FROM Product AS p
---    INNER JOIN Category AS c ON p.c_id = c.c_id
---END;
-
-
-
-----------updat store procedure "sp_listProducts" with date formate
- ALTER PROCEDURE [dbo].[sp_listProducts]
+----------CREATE STORE PROCEDURE "sp_listProducts"
+CREATE PROCEDURE [dbo].[sp_listProducts]
 AS
 BEGIN
     SET DATEFORMAT dmy
@@ -133,11 +88,15 @@ BEGIN
            p.p_name,
            c.c_id, 
            c.c_name,
-           CAST(p.Price AS DECIMAL(10, 2)) AS Price,
+           p.Price,
            p.ImageUrl,           -- New column for image URL
            p.ProductDetail,      -- New column for product details
            p.DiscountPrice,      -- New column for discount price
-		   convert(char(10), p.DateAdded, 103) as 'DateAdded'   -- New column for the date the product was added                 
+		   convert(char(10), p.DateAdded, 103) as 'DateAdded' ,  -- New column for the date the product was added 
+		   p.ProductNumber,
+		   p.Originated,
+		   p.Price50,
+		   p.Price100
     FROM Product AS p
     INNER JOIN Category AS c ON p.c_id = c.c_id
 END;
@@ -147,38 +106,30 @@ GO
 EXEC sp_listProducts
 
 
+--->>>>>CREATE PROCEDURE sp_saveProduct 
+CREATE PROCEDURE sp_saveProduct(
 
----->>>>>>>>>>>>>sp_saveProduct with update the datatype of p.Price
---ALTER PROCEDURE sp_saveProduct(
---@p_name VARCHAR(50),
---@c_id INT,
---@Price DECIMAL(10,2)
---)
---AS
---BEGIN
---	--set dateformat dmy
---	INSERT INTO Product(p_name, c_id, Price) VALUES
---	(@p_name, @c_id, @Price)
---END
---GO
-
-
----sp_saveProduct update with newly fields
-ALTER PROCEDURE sp_saveProduct(
-@p_name VARCHAR(50),
-@c_id INT,
-@Price DECIMAL(10,2),
-@ImageUrl VARCHAR(100),
-@ProductDetail VARCHAR(100),
-@DiscountPrice DECIMAL(10,2),
-@DateAdded VARCHAR(10)
+	
+	@p_name VARCHAR(50),
+	@c_id INT,
+	@Price DECIMAL(10,2),
+	@ImageUrl VARCHAR(100),
+	@ProductDetail VARCHAR(100),
+	@DiscountPrice DECIMAL(10,2),
+	@DateAdded VARCHAR(10),
+	@ProductNumber NVARCHAR(MAX),
+	@Originated NVARCHAR(MAX),
+	@Price50 FLOAT,
+	@Price100 FLOAT
 )
+
 AS
 BEGIN
-	set dateformat dmy
-	INSERT INTO Product(p_name, c_id, Price,ImageUrl, ProductDetail, DiscountPrice,DateAdded) VALUES
-	(@p_name, @c_id, @Price, @ImageUrl, @ProductDetail, @DiscountPrice, convert(date, @DateAdded))
+	SET DATEFORMAT dmy
+	INSERT INTO Product(p_name, c_id, Price, ImageUrl, ProductDetail, DiscountPrice, DateAdded, ProductNumber, Originated, Price50, Price100)
+	VALUES	( @p_name, @c_id, @Price, @ImageUrl, @ProductDetail, @DiscountPrice, convert(date, @DateAdded), @ProductNumber, @Originated, @Price50, @Price100)
 END
+GO
 
 ---->EXECUTE sp_saveProduct
 DECLARE @RC int
@@ -201,39 +152,9 @@ EXECUTE @RC = [dbo].[sp_saveProduct]
 GO
 
 
---create procedure sp_saveProduct(
---@p_name varchar(50),
---@c_id int,
---@Price int
---)
---as
---begin
---	--set dateformat dmy
---	insert into Product(p_name, c_id, Price) values
---	(@p_name, @c_id, @Price)
---end
 
-
--->>>>>>>>>>>>>>>sp_editProduct with update the datatype of p.Price
-
---ALTER  PROCEDURE sp_editProduct(
---@p_id INT,
---@p_name VARCHAR(50),
---@c_id INT,
---@Price DECIMAL(10,2)
---)
---as
---begin
---	--set dateformat dmy
---	update Product set
---	p_name = @p_name,
---	c_id = @c_id,
---	Price = @Price
---	Where p_id = @p_id
---end
-
---Latest sp_editProduct code  
-ALTER  PROCEDURE [dbo].[sp_editProduct](
+-----------STORE PROCEDURE sp_editProduct
+CREATE  PROCEDURE [dbo].[sp_editProduct](
 @p_id INT,
 @p_name VARCHAR(50),
 @c_id INT,
@@ -241,21 +162,30 @@ ALTER  PROCEDURE [dbo].[sp_editProduct](
 @ImageUrl VARCHAR(100),
 @ProductDetail VARCHAR(100),
 @DiscountPrice DECIMAL(10,2),
-@DateAdded VARCHAR(10)
+@DateAdded VARCHAR(10),
+@ProductNumber NVARCHAR(MAX),
+@Originated NVARCHAR(MAX),
+@Price50 FLOAT,
+@Price100 FLOAT
+
 )
-as
-begin
-	set dateformat dmy
-	update Product set
+AS
+BEGIN
+	SET DATEFORMAT dmy
+	UPDATE Product SET
 	p_name = @p_name,
 	c_id = @c_id,
 	Price = @Price,
 	ImageUrl = @ImageUrl,
 	ProductDetail = @ProductDetail,
 	DiscountPrice = @DiscountPrice,
-	DateAdded = convert(date, @DateAdded)
-	Where p_id = @p_id
-end
+	DateAdded = convert(date, @DateAdded),
+	ProductNumber = @ProductNumber,
+	Originated = @Originated,
+	Price50 = @Price50,
+	Price100 = @Price100
+	WHERE p_id = @p_id
+END
 GO
 
 --create procedure sp_editProduct(
@@ -274,40 +204,73 @@ GO
 --	Where p_id = @p_id
 --end
 
------------>>>>>>>>>>>>>>>sp_detailProduct
-CREATE PROCEDURE sp_detailProduct(
-@p_id int
-)
+----------->>>>CREATE PROCEDURE sp_detailProduct
+--CREATE PROCEDURE sp_detailProduct(
+--@p_id int
+--)
+--AS
+--BEGIN
+--	SELECT p.p_id, 
+--           p.p_name,
+--           c.c_id, 
+--           c.c_name,
+--           CAST(p.Price AS DECIMAL(10, 2)) AS Price,
+--           p.ImageUrl,           
+--           p.ProductDetail,      
+--           p.DiscountPrice,     
+--		   p.ProductNumber,
+--		   p.Originated,
+--		   p.Price50,
+--		   p.Price100          
+--    FROM Product AS p
+--    INNER JOIN Category AS c ON p.c_id = c.c_id
+--	Where  p.p_id = @p_id
+--END;
+--GO
+------------------------------------------------
+CREATE PROCEDURE sp_detailProduct
+    @ProductId INT
 AS
 BEGIN
-	SELECT p.p_id, 
+    -- Check if the provided CompanyId is valid
+    IF @ProductId IS NULL OR @ProductId <= 0
+    BEGIN
+        PRINT 'Invalid Company ID';
+        RETURN;
+    END
+
+    -- Retrieve company details based on the provided CompanyId
+    SELECT 
+       p.p_id, 
            p.p_name,
            c.c_id, 
            c.c_name,
            CAST(p.Price AS DECIMAL(10, 2)) AS Price,
-           p.ImageUrl,           -- New column for image URL
-           p.ProductDetail,      -- New column for product details
-           p.DiscountPrice     -- New column for discount price
-		             
-    FROM Product AS p
-    INNER JOIN Category AS c ON p.c_id = c.c_id
-	Where  p.p_id = @p_id
+           p.ImageUrl,           
+           p.ProductDetail,      
+           p.DiscountPrice,  
+		   p.ProductNumber,
+		   p.Originated,
+		   p.Price50,
+		   p.Price100  
+   FROM Product AS p
+   INNER JOIN Category AS c ON p.c_id = c.c_id
+   WHERE p.p_id = @ProductId;
 END;
 GO
-
 
 EXEC sp_detailProduct 8
 GO
 
 -->>>>>>>>>>>>>>>sp_deleteProdduct
 
-create procedure sp_deleteProdduct(
-@p_id int
+CREATE PROCEDURE sp_deleteProdduct(
+@p_id INT
 )
-as
-begin
-	delete from Product where p_id = @p_id
-end
+AS
+BEGIN
+	DELETE FROM Product WHERE p_id = @p_id
+END
 
 ----------------
 

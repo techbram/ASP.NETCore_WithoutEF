@@ -3,7 +3,7 @@
 }
 
 <div class="row justify-content-center">
-    <div class="container">
+    <div class="container col-10">
         <div class="row pt-4">
             <div class="col-6">
                 <h3 class="text-primary">Product CRUD</h3>
@@ -59,28 +59,46 @@
                     <input type="text" class="form-control" id="txtName" autocomplete="off">
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Product Number</label>
+                    <input type="text" class="form-control" id="txtProductNum">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Originated</label>
+                    <input type="text" class="form-control" id="txtOrigin">
+                </div>
+               
+                <div class="mb-3">
                     <label class="form-label">Category</label>
                     <select class="form-select" id="selectCategory"></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Product Detail</label>
+                    <input type="text" class="form-control" id="txtDetail">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Price</label>
                     <input type="number" class="form-control" id="numPrice">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Product Detail</label>
-                    <input type="text" class="form-control" id="textDetail">
+                    <label class="form-label">Price 50</label>
+                    <input type="number" class="form-control" id="numPrice50">
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Price 100</label>
+                    <input type="number" class="form-control" id="numPrice100">
+                </div>
+               
                 <div class="mb-3">
                     <label class="form-label">Discount Price</label>
                     <input type="number" class="form-control" id="numDiscount">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Added Date</label>
-                    <input type="text" class="form-control" id="dtAddedDate">
+                    <input type="text" class="form-control" id="txtDate">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Image Url</label>
-                    <input type="file" class="form-control" id="textImage" >
+                    <input type="text" class="form-control" id="txtImage" >
                 </div>
             </div>
 

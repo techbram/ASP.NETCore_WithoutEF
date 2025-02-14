@@ -3,12 +3,15 @@ using ASP.NETCore_WithoutEF.Repository.Contract;
 //using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 using System.CodeDom;
+using System.Linq.Expressions;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
     public class CategoryRepository : IGenericRepository<Category>
     {
         private readonly string? _SQLString = "";
+
+       
 
         // primary constructor to configure and instantiate database connection string
         public CategoryRepository(IConfiguration _configuration)
@@ -52,7 +55,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 con.Open();
                 SqlCommand cmd = new SqlCommand("sp_editCategory", con);
 
-                // Update product
+                // Update Category
                 cmd.Parameters.AddWithValue("c_id", model.Id);
                 cmd.Parameters.AddWithValue("c_name", model.Name);
                 cmd.Parameters.AddWithValue("DisplayOrder", model.DisplayOrder);
@@ -113,5 +116,6 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
         {
             throw new NotImplementedException();
         }
+              
     }
 }

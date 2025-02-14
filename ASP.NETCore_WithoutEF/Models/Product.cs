@@ -19,7 +19,7 @@ namespace ASP.NETCore_WithoutEF.Models
         public Category? CategoryRef { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         [ValidateNever]
         [Display(Name = "Image")]
@@ -30,7 +30,7 @@ namespace ASP.NETCore_WithoutEF.Models
 
         [Required]
         [Range(1, 1000)]
-        public decimal DiscountPrice { get; set; }
+        public double DiscountPrice { get; set; }
 
        
         [Required]
@@ -38,7 +38,7 @@ namespace ASP.NETCore_WithoutEF.Models
 
 
         [Required]
-        public string? ModelNumber { get; set; }
+        public string? ProductNumber { get; set; }
 
 
         [Required]
