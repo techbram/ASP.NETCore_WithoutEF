@@ -6,6 +6,7 @@ namespace ASP.NETCore_WithoutEF.Models
 {
     public class OrderHeader
     {
+        [Key]
         public int Id { get; set; }
         public string ApplicationUserId { get; set; }
 
@@ -14,7 +15,7 @@ namespace ASP.NETCore_WithoutEF.Models
         public ApplicationUser ApplicationUser { get; set; }
 
         public DateTime OrderDate { get; set; }
-        public DateTime ShippingDate { get; set; }
+        public DateTime? ShippingDate { get; set; }
         public double OrderTotal { get; set; }
 
         public string? OrderStatus { get; set; }
@@ -23,8 +24,8 @@ namespace ASP.NETCore_WithoutEF.Models
         public string? Carrier { get; set; }
 
 
-        public DateTime PaymentDate { get; set; }
-        public DateTime PaymentDueDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
+        public DateTime? PaymentDueDate { get; set; }
         public string? PaymentIntentId { get; set; }
 
 

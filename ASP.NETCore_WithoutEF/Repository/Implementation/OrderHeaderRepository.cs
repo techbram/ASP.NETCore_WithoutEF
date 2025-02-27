@@ -1,33 +1,203 @@
 ﻿using ASP.NETCore_WithoutEF.Models;
 using ASP.NETCore_WithoutEF.Repository.Contract;
+using Microsoft.Data.SqlClient;
+using System.Data.SqlTypes;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
-    public class OrderHeaderRepository : IGenericRepository<OrderHeader>
-    {
-        public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+	public class OrderHeaderRepository : IGenericRepository<OrderHeader>
+	{
+		private readonly string? _SQLString = "";
+		public OrderHeaderRepository(IConfiguration _configuration)
+		{
+			_SQLString = _configuration.GetConnectionString("SQLString");     //Getting connection with database
 
-        public Task<OrderHeader> Detail(int id)
-        {
-            throw new NotImplementedException();
-        }
+		}
+		public async Task<bool> Save(OrderHeader model)
+		{
+			using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+			{
+				con.Open();                                              // Open Connection
 
-        public Task<bool> Edit(OrderHeader model)
-        {
-            throw new NotImplementedException();
-        }
+				SqlCommand cmd = new SqlCommand("sp_saveOrderHeader", con);  // Specify command store procedure
 
-        public Task<List<OrderHeader>> List()
-        {
-            throw new NotImplementedException();
-        }
+				//Add parameter with value
 
-        public Task<bool> Save(OrderHeader model)
-        {
-            throw new NotImplementedException();
-        }
-    }
+				
+				cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
+
+				cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
+				
+
+				cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate);			
+
+				cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
+				cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
+				cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
+				cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : model.TrackingNumber);
+				
+				cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : model.Carrier);
+
+				cmd.Parameters.AddWithValue("PaymentDate", model.PaymentDate);
+				//cmd.Parameters.AddWithValue("PaymentDate",					model.PaymentDate != DateTime.MinValue ? model.PaymentDate : DBNull.Value);
+
+				cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate);
+				cmd.Parameters.AddWithValue("Name", model.Name);
+				cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
+				cmd.Parameters.AddWithValue("City", model.City);
+				cmd.Parameters.AddWithValue("State", model.State);
+				cmd.Parameters.AddWithValue("PostalCode", model.PostalCode);
+				cmd.Parameters.AddWithValue("PhoneNumber", model.PhoneNumber);
+
+				cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+				
+				int affected_rows = await cmd.ExecuteNonQueryAsync();
+
+				if (affected_rows > 0) { return true; }
+				else { return false; }
+			}
+		}
+		
+		public async Task<bool> Edit(OrderHeader model)                   //Update OrderHerder
+		{
+			using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+			{
+				con.Open();                                              // Open Connection
+
+				SqlCommand cmd = new SqlCommand("sp_EditOrderHeader", con);  // Specify command store procedure
+
+				//Add parameter with value
+				
+				cmd.Parameters.AddWithValue("Id", model.Id);
+				cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
+				cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
+				
+				cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate);				
+
+				cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
+				cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
+				cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
+
+				cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : (object)model.TrackingNumber);
+				
+				cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : (object)model.Carrier);
+				cmd.Parameters.AddWithValue("PaymentDate",model.PaymentDate != DateTime.MinValue ? (object)model.PaymentDate : DBNull.Value);
+
+				cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate);
+				cmd.Parameters.AddWithValue("Name", model.Name);
+				cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
+				cmd.Parameters.AddWithValue("City", model.City);
+				cmd.Parameters.AddWithValue("State", model.State);
+				cmd.Parameters.AddWithValue("PostalCode", model.PostalCode);
+				cmd.Parameters.AddWithValue("PhoneNumber", model.PhoneNumber);
+
+				cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+
+				int affected_rows = await cmd.ExecuteNonQueryAsync();
+
+				if (affected_rows > 0) { return true; }
+				else { return false; }
+			}
+		}
+		public async Task<List<OrderHeader>> List()
+		{
+			List<OrderHeader> orderHeaderList = new List<OrderHeader>();                // Instantiate object(Category)  
+
+			using (SqlConnection con = new SqlConnection(_SQLString))         // Create connection
+			{
+				con.Open();                                                   //Open Connection
+
+				SqlCommand cmd = new SqlCommand("sp_getListOrderHeader", con);   // Specify command (Stored Procedure)
+
+				cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+				using (var dr = await cmd.ExecuteReaderAsync())
+				{
+					//read stored data and add to the list
+
+					while (await dr.ReadAsync())
+					{
+						orderHeaderList.Add(new OrderHeader
+						{
+							Id = Convert.ToInt32(dr["OrderHeaderId"]),
+							ApplicationUserId = dr["ApplicationUserId"].ToString(),
+							OrderDate = Convert.ToDateTime(dr["OrderDate"]),
+							ShippingDate = Convert.ToDateTime(dr["ShippingDate"]),
+							OrderTotal = Convert.ToDouble(dr["OrderTotal"]),
+							OrderStatus = dr["OrderStatus"].ToString(),
+							PaymentStatus = dr["PaymentStatus"].ToString(),
+							TrackingNumber = dr["TrackingNumber"].ToString(),
+							Carrier = dr["Carrier"].ToString(),
+							PaymentDate = Convert.ToDateTime(dr["PaymentDate"]),
+							PaymentDueDate = Convert.ToDateTime(dr["PaymentDueDate"]),
+							PaymentIntentId = dr["PaymentIntentId"].ToString(),
+							Name = dr["Name"].ToString(),
+							StreetAddress = dr["StreetAddress"].ToString(),
+							City = dr["City"].ToString(),
+							State = dr["State"].ToString(),
+							PostalCode = dr["PostalCode"].ToString(),
+							PhoneNumber = dr["PhoneNumber"].ToString()
+
+						});
+					}
+				}
+			}
+			return orderHeaderList;
+		}
+		public Task<bool> Delete(int id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task<OrderHeader> Detail(int id)
+		{
+			OrderHeader orderHeader = new OrderHeader();
+			//Product product = null;             // return null if no prodduct is found
+
+			using (SqlConnection con = new SqlConnection(_SQLString))
+			{
+				//con.Open();
+				await con.OpenAsync();
+
+				SqlCommand cmd = new SqlCommand("sp_getDetailOrderHeader", con);
+
+				cmd.CommandType = System.Data.CommandType.StoredProcedure;   //Specify command type                
+				cmd.Parameters.AddWithValue("@OrderHeaderId", id);    //  the stored procedure takes a parameter like @p_id
+
+				SqlDataReader dr = await cmd.ExecuteReaderAsync();
+
+				if (dr.HasRows)
+				{
+					while (await dr.ReadAsync())
+					{
+						orderHeader = new OrderHeader
+						{
+							Id = Convert.ToInt32(dr["OrderHeaderId"]),
+							ApplicationUserId = dr["ApplicationUserId"].ToString(),
+							OrderDate = Convert.ToDateTime(dr["OrderDate"]),
+							ShippingDate = Convert.ToDateTime(dr["ShippingDate"]),
+							OrderTotal = Convert.ToDouble(dr["OrderTotal"]),
+							OrderStatus = dr["OrderStatus"].ToString(),
+							PaymentStatus = dr["PaymentStatus"].ToString(),
+							TrackingNumber = dr["TrackingNumber"].ToString(),
+							Carrier = dr["Carrier"].ToString(),
+							PaymentDate = Convert.ToDateTime(dr["PaymentDate"]),
+							PaymentDueDate = Convert.ToDateTime(dr["PaymentDueDate"]),
+							PaymentIntentId = dr["PaymentIntentId"].ToString(),
+							Name = dr["Name"].ToString(),
+							StreetAddress = dr["StreetAddress"].ToString(),
+							City = dr["City"].ToString(),
+							State = dr["State"].ToString(),
+							PostalCode = dr["PostalCode"].ToString(),
+							PhoneNumber = dr["PhoneNumber"].ToString()
+
+						};
+					}
+				}
+			}
+			return orderHeader;
+		}
+	}
 }

@@ -259,13 +259,24 @@ GO
 
 ---------------------------------STORE PROCEDURE for ApplicationUser------------------
 --->>> sp_getApplicationUser
-	CREATE PROCEDURE sp_getCartList       
+	CREATE OR ALTER PROCEDURE sp_getApplicationUser       
 	AS
 	BEGIN
-		SELECT Id, Name, StreetAddress, City, State, PostalCode, PhoneNumber
-		FROM ApplicationUsers
+		SELECT 
+		a.Id AS ApplicationUserId,
+		a.Name, 
+		a.StreetAddress,
+		a.City, 
+		a.State,
+		a.PostalCode, 
+		a.PhoneNumber,
+		c.Id AS CompanyId
+		FROM ApplicationUsers a
+		INNER JOIN Companies AS c ON c.Id = a.CompanyId
+
 	END
 	GO
+	EXEC sp_getApplicationUser
 ----------------------sp_detailUser
 CREATE OR ALTER PROCEDURE sp_detailUser   
 @UserId NVARCHAR(450)

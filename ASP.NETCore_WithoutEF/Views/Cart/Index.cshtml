@@ -1,5 +1,7 @@
 ﻿@model ShoppingCartVM
 <form method="post">
+    <input asp-for="ShoppingCart.Id" hidden />
+    <input asp-for="OrderHeader.Id" hidden />
     <br />
     <div class="card shadow border-0">
         <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">

@@ -49,13 +49,20 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                                 ProductName = dr["p_name"].ToString(),
                                 Price = Convert.ToDouble(dr["Price"]),                                
                                 Price50 = Convert.ToDouble(dr["Price50"]),
-                                Price100 = Convert.ToDouble(dr["Price100"])
-                            },
+                                Price100 = Convert.ToDouble(dr["Price100"]),
+								CategoryId = Convert.ToInt32(dr["CategoryId"]),
+							},
                             Count = Convert.ToInt32(dr["Count"]),
                             ApplicationUser = new ApplicationUser
                             {
-                                Id = dr["ApplicationUserId"].ToString()
-                            }
+                                Id = dr["ApplicationUserId"].ToString(),
+								Name = dr["Name"].ToString(),
+								StreetAddress = dr["StreetAddress"].ToString(),
+								City = dr["City"].ToString(),
+								State = dr["State"].ToString(),
+								PostalCode = dr["PostalCode"].ToString(),
+								PhoneNumber = dr["PhoneNumber"].ToString()
+							}
 
                         });
                     }

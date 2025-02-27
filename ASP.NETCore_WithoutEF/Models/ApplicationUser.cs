@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace ASP.NETCore_WithoutEF.Models
@@ -12,11 +13,9 @@ namespace ASP.NETCore_WithoutEF.Models
     {
         [Key]
         public string? Id { get; set; }
-
-        [Required]
+               
         public string? UserName { get; set; }
-
-        [Required]
+                
         public string? PasswordHash { get; set; }
         [Required]
         public string? Email { get; set; }
@@ -32,5 +31,9 @@ namespace ASP.NETCore_WithoutEF.Models
         [ForeignKey("CompanyId")]
         [ValidateNever]
         public Company Company { get; set; }
+
+        //public string? NormalizedUserName { get; set; }
+        //public byte EmailConfirmed { get; set; }
+        
     }
 }
