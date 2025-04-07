@@ -29,15 +29,18 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>  
-                        
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Order" asp-action="Index">Manage Order</a>
+                        </li>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Content Management</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Company" asp-action="Index">Company</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                @* <a class="dropdown-item" href="#">Something else here</a> *@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Separated link</a>
                             </div>

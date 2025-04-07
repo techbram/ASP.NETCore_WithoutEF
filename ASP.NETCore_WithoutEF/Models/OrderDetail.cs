@@ -7,14 +7,17 @@ namespace ASP.NETCore_WithoutEF.Models
     public class OrderDetail
     {
         public int Id { get; set; }
+
         [Required]
         public int OrderHeaderId { get; set; }
 
         [ForeignKey(nameof(OrderHeaderId))]
         [ValidateNever]
         public OrderHeader OrderHeader { get; set; }
+
         [Required]
         public int ProductId { get; set; }
+
         [ForeignKey(nameof(ProductId))]
         [ValidateNever]
         public Product Product { get; set; }
