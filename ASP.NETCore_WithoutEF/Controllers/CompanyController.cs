@@ -7,9 +7,9 @@ namespace ASP.NETCore_WithoutEF.Controllers
     public class CompanyController : Controller
     {
 
-        private readonly IGenericRepository<Company> _companyRepo;
+        private readonly ICompanyRepository<Company> _companyRepo;
 
-        public CompanyController(IGenericRepository<Company> companyRepo)
+        public CompanyController(ICompanyRepository<Company> companyRepo)
         {
 
             _companyRepo = companyRepo;
@@ -23,7 +23,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListCompanies()
         {
-            List<Company> companyList = await _companyRepo.List();
+            List<Company> companyList = await _companyRepo.GetCompanyList();
 
             return StatusCode(StatusCodes.Status200OK, companyList);  // Return successful answer          
         }

@@ -7,9 +7,9 @@ namespace ASP.NETCore_WithoutEF.Controllers
     public class CategoryController : Controller
     {
         
-        private readonly IGenericRepository<Category> _categoryRepo;
+        private readonly ICategoryRepository<Category> _categoryRepo;
 
-        public CategoryController(IGenericRepository<Category> categoryRepo)
+        public CategoryController(ICategoryRepository<Category> categoryRepo)
         {
            
             _categoryRepo = categoryRepo;
@@ -23,7 +23,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListCategories()
         {
-            List<Category> categoryList = await _categoryRepo.List();
+            List<Category> categoryList = await _categoryRepo.GetCategoryList();
 
             return StatusCode(StatusCodes.Status200OK, categoryList);  // Return successful answer          
         }
@@ -37,7 +37,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
             if (ModelState.IsValid)
             {
                 // If the model is valid, save the category
-                bool _result = await _categoryRepo.Save(model);
+                bool _result = await _categoryRepo.SaveCategory(model);
 
                 if (_result)
                 {
@@ -60,7 +60,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpPut]
         public async Task<IActionResult> EditCategory([FromBody] Category model)
         {
-            bool _result = await _categoryRepo.Edit(model);
+            bool _result = await _categoryRepo.EditCategory(model);
 
             if (_result)
             {
@@ -78,7 +78,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         public async Task<IActionResult> DeleteCategory(int idCategory)
         {
 
-            bool _result = await _categoryRepo.Delete(idCategory);
+            bool _result = await _categoryRepo.DeleteCategory(idCategory);
 
             if (_result)
             {

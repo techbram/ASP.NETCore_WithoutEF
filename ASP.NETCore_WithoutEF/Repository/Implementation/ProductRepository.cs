@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
-    public class ProductRepository : IGenericRepository<Product>
+    public class ProductRepository : IProductRepository<Product>
     {
         private readonly string? _SQLString = "";
        
@@ -18,7 +18,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
         }
 
         //Method to get list of Product
-        public async Task<List<Product>> List()
+        public async Task<List<Product>> GetProductList()
         {
             List<Product> productList = new List<Product>();             // Instantiate object(Product) 
             using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
@@ -125,7 +125,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 else { return false; }
             }
         }
-        public async Task<Product> Detail(int id)
+        public async Task<Product> GetProduct(int id)
         {
             Product product = new Product();
             //Product product = null;             // return null if no prodduct is found
@@ -190,8 +190,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
 
         }
-
-        
+       
     }
 
 }

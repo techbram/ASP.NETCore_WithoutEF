@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
-    public class CompanyRepository : IGenericRepository<Company>
+    public class CompanyRepository : ICompanyRepository<Company>
     {
         private readonly string? _SQLString = "";
         public CompanyRepository(IConfiguration _configuration)
@@ -17,7 +17,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
         }
 
         //Method to get list of Company
-        public async Task<List<Company>> List()
+        public async Task<List<Company>> GetCompanyList()
         {
             List<Company> companyList = new List<Company>();             // Instantiate object(Product) 
             using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
@@ -51,15 +51,16 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
             return companyList;
         }
+
         //Method to update company
         public async Task<bool> Edit(Company model)
         {
             
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))    
             {
-                con.Open();                                              // Open Connection
+                con.Open();                                             
 
-                SqlCommand cmd = new SqlCommand("sp_editCompany", con);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_editCompany", con);  
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -82,19 +83,14 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
         }
 
-
         //Method to Save Company
         public async Task<bool> Save(Company model)
         {
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))    
             {
-                con.Open();                                              // Open Connection
+                con.Open();                                             
 
-                SqlCommand cmd = new SqlCommand("sp_saveCompany", con);  // Specify command store procedure
-                
-               
-                //Create and save company
-                //Add parameter with value
+                SqlCommand cmd = new SqlCommand("sp_saveCompany", con);     
                 
                 cmd.Parameters.AddWithValue("Name", model.Name);
                 cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
@@ -133,14 +129,6 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
         }
 
-        //Method to Detail Company
-
-        public Task<Company> Detail(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-      
     }
 }
 

@@ -7,10 +7,10 @@ namespace ASP.NETCore_WithoutEF.Controllers
     public class ProductController : Controller
     {
 
-        private readonly IGenericRepository<Product> _productRepo;
-        private readonly IGenericRepository<Category> _categoryRepo;
+        private readonly IProductRepository<Product> _productRepo;
+        private readonly ICategoryRepository<Category> _categoryRepo;
 
-        public ProductController(IGenericRepository<Product> productRepo, IGenericRepository<Category> categoryRepo)
+        public ProductController(IProductRepository<Product> productRepo, ICategoryRepository<Category> categoryRepo)
         {
             _productRepo = productRepo;
             _categoryRepo = categoryRepo;
@@ -25,7 +25,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListCategories()
         {
-            List<Category> categoryList = await _categoryRepo.List();
+            List<Category> categoryList = await _categoryRepo.GetCategoryList();
 
             return StatusCode(StatusCodes.Status200OK, categoryList);  // Return successful answer          
         }
@@ -34,7 +34,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListProducts()
         {
-            List<Product> productList = await _productRepo.List();
+            List<Product> productList = await _productRepo.GetProductList();
 
             return StatusCode(StatusCodes.Status200OK, productList);  // Return successful answer          
         }
@@ -84,7 +84,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
         // Action to view the product details
         public async Task<IActionResult> Detail(int id)
         {
-            Product product = await _productRepo.Detail(id);
+            Product product = await _productRepo.GetProduct(id);
             if (product == null)
             {
                 return NotFound();

@@ -13,7 +13,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
-    public class ShoppingCartRepository : IGenericRepository<ShoppingCart>
+    public class ShoppingCartRepository : IShoppingCartRepository<ShoppingCart>
     {
         private readonly string? _SQLString = "";
         public ShoppingCartRepository(IConfiguration _configuration)
@@ -21,16 +21,65 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             _SQLString = _configuration.GetConnectionString("SQLString");     //Getting connection with database
 
         }
-        public async Task<List<ShoppingCart>> List()
+        //public async Task<List<ShoppingCart>> GetList()
+        //{
+        //    List<ShoppingCart> cartList = new List<ShoppingCart>();
+
+        //    using (SqlConnection con = new SqlConnection(_SQLString))
+        //    {
+        //        con.Open();
+
+        //        SqlCommand cmd = new SqlCommand("sp_listShoppingCart", con);
+        //        //cmd.Parameters.AddWithValue("ApplicationUserId", applicationUserId);
+        //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+        //        using (var dr = await cmd.ExecuteReaderAsync())
+        //        {
+        //            //read stored data and add to the list
+
+        //            while (await dr.ReadAsync())
+        //            {
+        //                cartList.Add(new ShoppingCart
+        //                {
+        //                    Id = Convert.ToInt32(dr["Id"]),
+        //                    Product = new Product
+        //                    {
+        //                        Id = Convert.ToInt32(dr["ProductId"]),
+        //                        ProductName = dr["p_name"].ToString(),
+        //                        Price = Convert.ToDouble(dr["Price"]),
+        //                        Price50 = Convert.ToDouble(dr["Price50"]),
+        //                        Price100 = Convert.ToDouble(dr["Price100"]),
+        //                        CategoryId = Convert.ToInt32(dr["CategoryId"]),
+        //                    },
+        //                    Count = Convert.ToInt32(dr["Count"]),
+        //                    ApplicationUser = new ApplicationUser
+        //                    {
+        //                        Id = dr["ApplicationUserId"].ToString(),
+        //                        Name = dr["Name"].ToString(),
+        //                        StreetAddress = dr["StreetAddress"].ToString(),
+        //                        City = dr["City"].ToString(),
+        //                        State = dr["State"].ToString(),
+        //                        PostalCode = dr["PostalCode"].ToString(),
+        //                        PhoneNumber = dr["PhoneNumber"].ToString(),
+        //                        CompanyId = Convert.ToInt32(dr["CompanyId"])
+        //                    }
+
+        //                });
+        //            }
+        //        }
+        //    }
+        //    return cartList;
+        //}
+        public async Task<List<ShoppingCart>> GetCartList(string applicationUserId)
         {
-            List<ShoppingCart> cartList = new List<ShoppingCart>();                // Instantiate object(Category)  
+            List<ShoppingCart> cartList = new List<ShoppingCart>();
 
-            using (SqlConnection con = new SqlConnection(_SQLString))         // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                con.Open();                                                   //Open Connection
+                con.Open();
 
-                SqlCommand cmd = new SqlCommand("sp_listShoppingCart", con);   // Specify command (Stored Procedure)
-
+                SqlCommand cmd = new SqlCommand("sp_listShoppingCartById", con);
+                cmd.Parameters.AddWithValue("ApplicationUserId", applicationUserId);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 using (var dr = await cmd.ExecuteReaderAsync())
@@ -42,27 +91,27 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                         cartList.Add(new ShoppingCart
                         {
                             Id = Convert.ToInt32(dr["Id"]),
-                            //ProductId = Convert.ToInt32(dr["ProductId"]),
                             Product = new Product
                             {
                                 Id = Convert.ToInt32(dr["ProductId"]),
                                 ProductName = dr["p_name"].ToString(),
-                                Price = Convert.ToDouble(dr["Price"]),                                
+                                Price = Convert.ToDouble(dr["Price"]),
                                 Price50 = Convert.ToDouble(dr["Price50"]),
                                 Price100 = Convert.ToDouble(dr["Price100"]),
-								CategoryId = Convert.ToInt32(dr["CategoryId"]),
-							},
+                                CategoryId = Convert.ToInt32(dr["CategoryId"]),
+                            },
                             Count = Convert.ToInt32(dr["Count"]),
                             ApplicationUser = new ApplicationUser
                             {
                                 Id = dr["ApplicationUserId"].ToString(),
-								Name = dr["Name"].ToString(),
-								StreetAddress = dr["StreetAddress"].ToString(),
-								City = dr["City"].ToString(),
-								State = dr["State"].ToString(),
-								PostalCode = dr["PostalCode"].ToString(),
-								PhoneNumber = dr["PhoneNumber"].ToString()
-							}
+                                Name = dr["Name"].ToString(),
+                                StreetAddress = dr["StreetAddress"].ToString(),
+                                City = dr["City"].ToString(),
+                                State = dr["State"].ToString(),
+                                PostalCode = dr["PostalCode"].ToString(),
+                                PhoneNumber = dr["PhoneNumber"].ToString(),
+                                CompanyId = dr.IsDBNull(dr.GetOrdinal("CompanyId")) ? 0 : Convert.ToInt32(dr["CompanyId"])
+                            }
 
                         });
                     }
@@ -70,6 +119,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
             return cartList;
         }
+
 
         public async Task<bool> Save(ShoppingCart model)
         {
@@ -122,7 +172,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 else { return false; }
             }
         }
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(int cartId)
         {
             using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
             {
@@ -130,7 +180,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
 
                 SqlCommand cmd = new SqlCommand("sp_deleteCartItem", conn);  // Specify command store procedure
 
-                cmd.Parameters.AddWithValue("@CartId", id);
+                cmd.Parameters.AddWithValue("@CartId", cartId);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;    //Specify command type
 
@@ -142,7 +192,27 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
         }
 
-        public async Task<ShoppingCart> Detail(int id)
+        public async Task<bool> DeleteCartItemByAppUserId(string applicationUserId)
+        {
+            using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
+            {
+                conn.Open();                                             // Open Connection
+
+                SqlCommand cmd = new SqlCommand("sp_deleteCartItemByAppUserId", conn);  // Specify command store procedure
+
+                cmd.Parameters.AddWithValue("@ApplicationUserId", applicationUserId);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;    //Specify command type
+
+                int affected_rows = await cmd.ExecuteNonQueryAsync();
+
+                if (affected_rows > 0) { return true; }
+                else { return false; }
+            }
+        }
+
+
+        public async Task<ShoppingCart> GetCart(int cartId)
         {
             ShoppingCart cart = new ShoppingCart();
 
@@ -150,11 +220,11 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             {
                 await con.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand("sp_DetailCart", con))
+                using (SqlCommand cmd = new SqlCommand("sp_getCartItem", con))
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     
-                    cmd.Parameters.AddWithValue("@ShoppingCartId", id);
+                    cmd.Parameters.AddWithValue("@ShoppingCartId", cartId);
                   
                     // Use a using block for SqlDataReader to ensure it is properly disposed
                     using (SqlDataReader dr = await cmd.ExecuteReaderAsync())
@@ -179,9 +249,6 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
 
             return cart; // Return null if no rows were found.
         }
-
-
-
 
     }
 }

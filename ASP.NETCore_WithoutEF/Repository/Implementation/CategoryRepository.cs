@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace ASP.NETCore_WithoutEF.Repository.Implementation
 {
-    public class CategoryRepository : IGenericRepository<Category>
+    public class CategoryRepository : ICategoryRepository<Category>
     {
         private readonly string? _SQLString = "";
 
@@ -18,7 +18,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
         {
             _SQLString = _configuration.GetConnectionString("SQLString");     //Getting connection with database
         }
-        public async Task<List<Category>> List()
+        public async Task<List<Category>> GetCategoryList()
         {
             List<Category> categoryList = new List<Category>();                // Instantiate object(Category)  
 
@@ -48,7 +48,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             return categoryList;
 
         }
-        public async Task<bool> Edit(Category model)
+        public async Task<bool> EditCategory(Category model)
         {
             using (SqlConnection con = new SqlConnection(_SQLString)) { 
 
@@ -69,7 +69,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 else { return false; }
             }
         }
-        public async Task<bool> Save(Category model)
+        public async Task<bool> SaveCategory(Category model)
         {
             using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
             {
@@ -91,7 +91,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 else { return false; }
             }
         }
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteCategory(int id)
         {
             using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
             {
@@ -110,12 +110,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
 
             }
 
-        }
-
-        public Task<Category> Detail(int id)
-        {
-            throw new NotImplementedException();
-        }
-              
+        }       
+       
     }
 }

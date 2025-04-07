@@ -13,35 +13,31 @@ namespace ASP.NETCore_WithoutEF.Controllers
     public class HomeController : Controller
     {
 
-        private readonly IGenericRepository<Product> _productRepo;
-        private readonly IGenericRepository<ShoppingCart> _cartRepo;
-        public HomeController(IGenericRepository<Product> productRepo, IGenericRepository<ShoppingCart> cartRepo)
+        private readonly IProductRepository<Product> _productRepo;
+        private readonly IShoppingCartRepository<ShoppingCart> _cartRepo;
+        private readonly IApplicationUserRepository<ApplicationUser> _userRepo;
+        string userId = "user123";
+        public HomeController(IProductRepository<Product> productRepo, IShoppingCartRepository<ShoppingCart> cartRepo, IApplicationUserRepository<ApplicationUser> userRepo)
         {
             _productRepo = productRepo;
             _cartRepo = cartRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<Product> productList = await _productRepo.List();
+            List<Product> productList = await _productRepo.GetProductList();
             //List<ShoppingCart> cartList = await _cartRepo.List();
             return View(productList);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetShoppingCart()
-        {
-            List<ShoppingCart> cartList = await _cartRepo.List();
+       
 
-            return StatusCode(StatusCodes.Status200OK, cartList);  // Return successful answer          
-        }
-
-        // Action to view the product details on Home Page
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
             ShoppingCart cart = new ShoppingCart()
             {
-                Product = await _productRepo.Detail(id),
+                Product = await _productRepo.GetProduct(id),
                 Count = 1,
                 ProductId = id
             };
@@ -51,10 +47,14 @@ namespace ASP.NETCore_WithoutEF.Controllers
 
         [HttpPost]
         [ActionName("Detail")]
-        public async Task<IActionResult> Detail(ShoppingCart model)
+        public async Task<IActionResult> DetailAddToCart(ShoppingCart shoppingCart)
         {
 
-            bool _result = await _cartRepo.Save(model);
+           ApplicationUser applicationUser = await _userRepo.GetUser(userId);
+         
+            shoppingCart.ApplicationUserId = applicationUser.Id;
+
+            bool _result = await _cartRepo.Save(shoppingCart);
             if (_result)
             {
                 // Return a success response
@@ -65,19 +65,7 @@ namespace ASP.NETCore_WithoutEF.Controllers
             return Json(new { success = false, message = "An error occurred while saving the cart!" });
            
         }
-        public async Task<IActionResult> EditCart(ShoppingCart model)
-        {
-
-            bool _result = await _cartRepo.Edit(model);
-
-            if (_result)
-            {
-                return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
-
-            }
-            return StatusCode(StatusCodes.Status500InternalServerError, new { value = _result, msg = "error" });
-        }
-
+       
         public IActionResult Privacy()
         {
             return View();

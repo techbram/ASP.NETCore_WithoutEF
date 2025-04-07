@@ -10,7 +10,7 @@ namespace ASP.NETCore_WithoutEF.Models
         public int Id { get; set; }
 
         [Required]        
-        public string? ProductName { get; set; }  
+        public string ProductName { get; set; }  
         
         public int CategoryId { get; set; }
 
@@ -38,7 +38,7 @@ namespace ASP.NETCore_WithoutEF.Models
 
 
         [Required]
-        public string? ProductNumber { get; set; }
+        public string ProductNumber { get; set; }
 
 
         [Required]
