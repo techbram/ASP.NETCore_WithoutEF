@@ -16,7 +16,9 @@ namespace ASP.NETCore_WithoutEF.Controllers
         private readonly IProductRepository<Product> _productRepo;
         private readonly IShoppingCartRepository<ShoppingCart> _cartRepo;
         private readonly IApplicationUserRepository<ApplicationUser> _userRepo;
-        string userId = "user123";
+        //string userId = "user123";
+        //string userId = "admin123";
+        string userId = "testcompany123";
         public HomeController(IProductRepository<Product> productRepo, IShoppingCartRepository<ShoppingCart> cartRepo, IApplicationUserRepository<ApplicationUser> userRepo)
         {
             _productRepo = productRepo;

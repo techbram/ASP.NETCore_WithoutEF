@@ -24,21 +24,22 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
 
                 cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
                 cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
-                cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate);			
+                //cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate != DateTime.MinValue ? (object)model.ShippingDate : DBNull.Value);			
+                cmd.Parameters.AddWithValue("@ShippingDate", model.ShippingDate ?? (object)DBNull.Value);
 
                 cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
                 cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
                 cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
                 cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : model.TrackingNumber);
-                
                 cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : model.Carrier);
 
-                cmd.Parameters.AddWithValue("PaymentDate", model.PaymentDate);
-
+                //cmd.Parameters.AddWithValue("PaymentDate", model.PaymentDate != DateTime.MinValue ? (object)model.PaymentDate : DBNull.Value);
+                cmd.Parameters.AddWithValue("@PaymentDate", model.PaymentDate ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("SessionId", string.IsNullOrEmpty(model.SessionId) ? DBNull.Value : (object)model.SessionId);
                 cmd.Parameters.AddWithValue("PaymentIntentId", string.IsNullOrEmpty(model.PaymentIntentId) ? DBNull.Value : (object)model.PaymentIntentId);
 
-                cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate);
+                //cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate != DateTime.MinValue ? (object)model.PaymentDueDate : DBNull.Value);
+                cmd.Parameters.AddWithValue("@PaymentDueDate", model.PaymentDueDate ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("Name", model.Name);
                 cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
                 cmd.Parameters.AddWithValue("City", model.City);
@@ -62,100 +63,53 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
             }
             return lastInsertedId;
         }
-        //public async Task<bool> Save(OrderHeader model)
-        //{
-        //    using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
-        //    {
-        //        con.Open();                                              // Open Connection
+        
+        public async Task<bool> Edit(OrderHeader model)                  
+        {
+            using (SqlConnection con = new SqlConnection(_SQLString))    
+            {
+                con.Open();                                              
 
-        //        SqlCommand cmd = new SqlCommand("sp_saveProduct", con);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_EditOrderHeader", con);  
 
-        //        //Add parameter with value
-        //        //cmd.Parameters.AddWithValue("p_id", model.Id);
-        //        cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
-        //        cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
-        //        cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate);
+                cmd.Parameters.AddWithValue("Id", model.Id);
+                cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
+                cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
+                cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate != DateTime.MinValue ? (object)model.ShippingDate : DBNull.Value);
+                cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
+                cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
+                cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
+                cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : (object)model.TrackingNumber);
+                cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : (object)model.Carrier);
+                cmd.Parameters.AddWithValue("PaymentDate", model.PaymentDate != DateTime.MinValue ? (object)model.PaymentDate : DBNull.Value);
+                cmd.Parameters.AddWithValue("SessionId", string.IsNullOrEmpty(model.SessionId) ? DBNull.Value : (object)model.SessionId);
+                cmd.Parameters.AddWithValue("PaymentIntentId", string.IsNullOrEmpty(model.PaymentIntentId) ? DBNull.Value : (object)model.PaymentIntentId);
+                cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate != DateTime.MinValue ? (object)model.PaymentDueDate : DBNull.Value);
+                cmd.Parameters.AddWithValue("Name", model.Name);
+                cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
+                cmd.Parameters.AddWithValue("City", model.City);
+                cmd.Parameters.AddWithValue("State", model.State);
+                cmd.Parameters.AddWithValue("PostalCode", model.PostalCode);
+                cmd.Parameters.AddWithValue("PhoneNumber", model.PhoneNumber);
 
-        //        cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
-        //        cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
-        //        cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
-        //        cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : model.TrackingNumber);
-
-        //        cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : model.Carrier);
-
-        //        cmd.Parameters.AddWithValue("PaymentDate", model.PaymentDate);
-
-        //        cmd.Parameters.AddWithValue("SessionId", string.IsNullOrEmpty(model.SessionId) ? DBNull.Value : (object)model.SessionId);
-        //        cmd.Parameters.AddWithValue("PaymentIntentId", string.IsNullOrEmpty(model.PaymentIntentId) ? DBNull.Value : (object)model.PaymentIntentId);
-
-        //        cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate);
-        //        cmd.Parameters.AddWithValue("Name", model.Name);
-        //        cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
-        //        cmd.Parameters.AddWithValue("City", model.City);
-        //        cmd.Parameters.AddWithValue("State", model.State);
-        //        cmd.Parameters.AddWithValue("PostalCode", model.PostalCode);
-        //        cmd.Parameters.AddWithValue("PhoneNumber", model.PhoneNumber);
-
-        //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-        //        int affected_rows = await cmd.ExecuteNonQueryAsync();
-
-        //        if (affected_rows > 0) { return true; }
-        //        else { return false; }
-        //    }
-        //}
-        //public async Task<bool> Edit(OrderHeader model)                   //Update OrderHerder
-        //{
-        //    using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
-        //    {
-        //        con.Open();                                              // Open Connection
-
-        //        SqlCommand cmd = new SqlCommand("sp_EditOrderHeader", con);  // Specify command store procedure
-
-        //        //Add parameter with value
-
-        //        cmd.Parameters.AddWithValue("Id", model.Id);
-        //        cmd.Parameters.AddWithValue("ApplicationUserId", model.ApplicationUserId);
-        //        cmd.Parameters.AddWithValue("OrderDate", model.OrderDate);
-
-        //        cmd.Parameters.AddWithValue("ShippingDate", model.ShippingDate);				
-
-        //        cmd.Parameters.AddWithValue("OrderTotal", model.OrderTotal);
-        //        cmd.Parameters.AddWithValue("OrderStatus", model.OrderStatus);
-        //        cmd.Parameters.AddWithValue("PaymentStatus", model.PaymentStatus);
-
-        //        cmd.Parameters.AddWithValue("TrackingNumber", string.IsNullOrEmpty(model.TrackingNumber) ? DBNull.Value : (object)model.TrackingNumber);
-
-        //        cmd.Parameters.AddWithValue("Carrier", string.IsNullOrEmpty(model.Carrier) ? DBNull.Value : (object)model.Carrier);
-        //        cmd.Parameters.AddWithValue("PaymentDate",model.PaymentDate != DateTime.MinValue ? (object)model.PaymentDate : DBNull.Value);
-        //        cmd.Parameters.AddWithValue("SessionId", string.IsNullOrEmpty(model.SessionId) ? DBNull.Value : (object)model.SessionId);
-        //        cmd.Parameters.AddWithValue("PaymentIntentId", string.IsNullOrEmpty(model.PaymentIntentId) ? DBNull.Value : (object)model.PaymentIntentId);
-        //        cmd.Parameters.AddWithValue("PaymentDueDate", model.PaymentDueDate);
-        //        cmd.Parameters.AddWithValue("Name", model.Name);
-        //        cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
-        //        cmd.Parameters.AddWithValue("City", model.City);
-        //        cmd.Parameters.AddWithValue("State", model.State);
-        //        cmd.Parameters.AddWithValue("PostalCode", model.PostalCode);
-        //        cmd.Parameters.AddWithValue("PhoneNumber", model.PhoneNumber);
-
-        //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
 
-        //        int affected_rows = await cmd.ExecuteNonQueryAsync();
+                int affected_rows = await cmd.ExecuteNonQueryAsync();
 
-        //        if (affected_rows > 0) { return true; }
-        //        else { return false; }
-        //    }
-        //}
+                if (affected_rows > 0) { return true; }
+                else { return false; }
+            }
+        }
         public async Task<List<OrderHeader>> GetListOrderHeader()
         {
-            List<OrderHeader> orderHeaderList = new List<OrderHeader>();                // Instantiate object(Category)  
+            List<OrderHeader> orderHeaderList = new List<OrderHeader>();               
 
-            using (SqlConnection con = new SqlConnection(_SQLString))         // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))         
             {
-                con.Open();                                                   //Open Connection
+                con.Open();                                                  
 
-                SqlCommand cmd = new SqlCommand("sp_getListOrderHeader", con);   // Specify command (Stored Procedure)
+                SqlCommand cmd = new SqlCommand("sp_getListOrderHeader", con);   
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -206,7 +160,7 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                 //con.Open();
                 await con.OpenAsync();
 
-                SqlCommand cmd = new SqlCommand("sp_getDetailOrderHeader", con);
+                SqlCommand cmd = new SqlCommand("sp_getOrderHeaderById", con);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;   //Specify command type                
                 cmd.Parameters.AddWithValue("@OrderHeaderId", id);    //  the stored procedure takes a parameter like @p_id
@@ -237,7 +191,11 @@ namespace ASP.NETCore_WithoutEF.Repository.Implementation
                             City = dr["City"].ToString(),
                             State = dr["State"].ToString(),
                             PostalCode = dr["PostalCode"].ToString(),
-                            PhoneNumber = dr["PhoneNumber"].ToString()
+                            PhoneNumber = dr["PhoneNumber"].ToString(),
+                            ApplicationUser = new ApplicationUser()
+                            {
+                                Email = dr["Email"].ToString()
+                            }
                         };
                     }
                 }

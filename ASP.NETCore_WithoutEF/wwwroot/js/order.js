@@ -1,19 +1,9 @@
-﻿/*alert("Hello, World!"); */
-// Product Modal
-const _orderHeaderModel = {
-    Id: 0,
-    Name: "",
-    PhoneNumber: "",
-    Email: "",
-    Status: "",
-    Total: 0,
-   
-}
+﻿
 
 // Function to Products Table
-function OrderListShow() {
+function OrderListShow(status) {
     //Fetch product data from the server
-    fetch("/Order/GetListOrderHeaders")
+    fetch("/Order/GetListOrderHeaders?status=" + status)
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -34,7 +24,8 @@ function OrderListShow() {
                             $("<td>").text(orderHeader.orderStatus),
                             $("<td>").text(orderHeader.orderTotal),
                             $("<td>").append(
-                                $("<button>").addClass("btn btn-primary btn-sm btn-edit-orderHeader ").text("Edit").data("orderHeaderData", orderHeader),
+                                $("<a>").attr("href", `/Order/Detail?orderId=${orderHeader.id}`)
+                                .addClass("btn btn-primary btn-sm btn-edit-orderHeader ").text("Edit").data("orderHeaderData", orderHeader)
                                
                             )
                         )
@@ -44,48 +35,41 @@ function OrderListShow() {
             //added extra code by my self to catch error
             else {
                 // Optional: Show a message if no products are available
-                $("#orderHeaderTable tbody").html("<tr><td colspan='4'>No Order found</td></tr>");
+                $("#orderHeaderTable tbody").html("<tr><td class='text-center' colspan='7' >No Order found</td></tr>");
             }
         })
         .catch(error => {
             console.error("Error fetching product data:", error);
             // Optional: Display an error message in case of failure
-            $("#orderHeaderTable tbody").html("<tr><td colspan='4'>Error loading orders</td></tr>");
+            $("#orderHeaderTable tbody").html("<tr><td colspan='7'>Error loading orders</td></tr>");
         });
 }
 
 // Function to get category name for product table
 document.addEventListener("DOMContentLoaded", function () {
 
-    OrderListShow();
+   /* OrderListShow();*/
 
-    //fetch("/Order/GetListCategories")
-    //    .then(response => {
-    //        return response.ok ? response.json() : Promise.reject(response)
-    //    })
-    //    .then(responseJson => {
-
-    //        if (responseJson.length > 0) {
-    //            responseJson.forEach((category) => {
-
-    //                $("#selectCategory").append(
-    //                    $("<option>").val(category.id).text(category.name)
-    //                );
-
-    //            })
-    //        }
-
-    //    })
-    //    .catch(error => {
-    //        console.error('Error fetching categories:', error);
-    //        alert('Failed to load categories');
-    //    });
-
-    //$("#txtDate").datepicker({
-    //    format: "dd/mm/yyyy",
-    //    autoclose: true,
-    //    todayHighlight: true
-    //});
-
-
-}, false)
+    var url = window.location.search;
+    if (url.includes("inprocess")) {
+        OrderListShow("inprocess");
+    }
+    else {
+        if (url.includes("completed")) {
+            OrderListShow("completed");
+        }
+        else {
+            if (url.includes("pending")) {
+                OrderListShow("pending");
+            }
+            else {
+                if (url.includes("approved")) {
+                    OrderListShow("approved");
+                }
+                else {
+                    OrderListShow("all");
+                }
+            }
+        }
+    }
+}, false);

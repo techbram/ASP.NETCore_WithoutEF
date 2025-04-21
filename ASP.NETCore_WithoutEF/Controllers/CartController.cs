@@ -18,7 +18,8 @@ namespace ASP.NETCore_WithoutEF.Controllers
         private readonly IShoppingCartRepository<ShoppingCart> _cartRepo;
         private readonly IOrderDetailRepository<OrderDetail> _orderDetailRepo;
         //string userId = "user123";
-        string userId = "user123";
+        //string userId = "admin123";
+        string userId = "testcompany123";
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
         public CartController(
@@ -165,9 +166,9 @@ namespace ASP.NETCore_WithoutEF.Controllers
             ShoppingCartVM.ShoppingCartList = await _cartRepo.GetCartList(userId);
 
             ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
-            ShoppingCartVM.OrderHeader.ShippingDate = System.DateTime.Now;
+            ShoppingCartVM.OrderHeader.ShippingDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.PaymentDate = System.DateTime.Now;
-            ShoppingCartVM.OrderHeader.PaymentDueDate = System.DateTime.Now;
+            ShoppingCartVM.OrderHeader.PaymentDueDate = System.DateTime.Now.AddDays(15);
 
 
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
