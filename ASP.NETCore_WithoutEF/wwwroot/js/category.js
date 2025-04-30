@@ -10,7 +10,7 @@ const _categoryModel = {
 //Function to Category Table
 function CategoryListShow() {
     //fetch the category list from the server
-    fetch("/Category/GetListCategories")
+    fetch("/Admin/Category/GetListCategories")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -59,7 +59,7 @@ function CategoryListShow() {
 // Function to get category name for category table
 document.addEventListener("DOMContentLoaded", function () {
 
-   /* alert("category Show!");*/
+    alert("category Show!");
 
     CategoryListShow();   
     
@@ -149,7 +149,7 @@ $(document).on("click", ".btn-save-changes", function () {
     // To Save
     if (_categoryModel.Id == 0) {
 
-        fetch("/Category/SaveCategory", {
+        fetch("/Admin/Category/SaveCategory", {
             method: "POST",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -169,7 +169,7 @@ $(document).on("click", ".btn-save-changes", function () {
     } else {    // To Edit
 
         console.log(_categoryModel.Id);
-        fetch("/Category/EditCategory", {
+        fetch("/Admin/Category/EditCategory", {
             method: "PUT",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -195,7 +195,7 @@ $(document).on("click", ".btn-delete-category", function () {
 
     Swal.fire({
         title: "Are you sure?",
-        text: `Delete Category "${_category.Name}"`,
+        text: `Delete Category "${_category.name}"`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -206,7 +206,7 @@ $(document).on("click", ".btn-delete-category", function () {
 
         if (result.isConfirmed) {
 
-            fetch(`/Category/DeleteCategory?idCategory=${_category.id}`, {
+            fetch(`/Admin/Category/DeleteCategory?idCategory=${_category.id}`, {
                 method: "DELETE"
             })
                 .then(response => {

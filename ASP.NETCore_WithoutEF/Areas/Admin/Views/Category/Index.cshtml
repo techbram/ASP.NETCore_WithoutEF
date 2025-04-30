@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Category";
+}
+
+<div class="row justify-content-center">
+    <div class="container">
+        <div class="row pt-4">
+            <div class="col-6">
+                <h3 class="text-primary">
+                    Category CRUD
+                </h3>
+            </div>
+            <div class="col-6 text-end">
+                <button type="button" class="btn btn-primary btn-new-category">
+                    <i class="bi bi-plus-circle"></i> New Category
+                </button>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered" id="categoryTable">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Display Order</th>
+                    <th>Created Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!--Category Modal -->
+
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalLabel">Category Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="txtCategory" placeholder="Must required" autocomplete="off">
+                   @*  <span id="nameError" style="color: red;"></span> *@
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Display Order</label>
+                    <input type="number" class="form-control" id="displayOrder" autocomplete="off">
+                    @* <span id="displayOrderError" style="color: red;"></span> *@
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Created Date</label>
+                    <input type="text" class="form-control" id="dtCreated">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-save-changes">Save changes</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+  @*   @{
+    <partial name="_ValidationScriptsPartial" />
+    } *@
+    <script src="~/js/category.js"></script>
+}

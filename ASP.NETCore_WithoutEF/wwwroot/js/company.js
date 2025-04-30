@@ -12,7 +12,7 @@ const _companyModel = {
 //Function to Company Table
 function CompanyListShow() {
     //fetch the category list from the server
-    fetch("/Company/GetListCompanies")
+    fetch("/Admin/Company/GetListCompanies")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -126,7 +126,7 @@ $(document).on("click", ".btn-save-changes", function () {
     // To Save
     if (_companyModel.Id == 0) {
 
-        fetch("/Company/SaveCompany", {
+        fetch("/Admin/Company/SaveCompany", {
             method: "POST",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -146,7 +146,7 @@ $(document).on("click", ".btn-save-changes", function () {
     } else {    // To Edit
 
         console.log(_companyModel.Id);
-        fetch("/Company/EditCompany", {
+        fetch("/Admin/Company/EditCompany", {
             method: "PUT",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -172,7 +172,7 @@ $(document).on("click", ".btn-delete-company", function () {
 
     Swal.fire({
         title: "Are you sure?",
-        text: `Delete Company "${_company.Name}"`,
+        text: `Delete Company "${_company.name}"`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -183,7 +183,7 @@ $(document).on("click", ".btn-delete-company", function () {
 
         if (result.isConfirmed) {
 
-            fetch(`/Company/DeleteCompany?idCompany=${_company.id}`, {
+            fetch(`/Admin/Company/DeleteCompany?idCompany=${_company.id}`, {
                 method: "DELETE"
             })
                 .then(response => {

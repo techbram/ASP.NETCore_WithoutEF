@@ -3,7 +3,7 @@
 // Function to Products Table
 function OrderListShow(status) {
     //Fetch product data from the server
-    fetch("/Order/GetListOrderHeaders?status=" + status)
+    fetch("/Admin/Order/GetListOrderHeaders?status=" + status)
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -24,7 +24,7 @@ function OrderListShow(status) {
                             $("<td>").text(orderHeader.orderStatus),
                             $("<td>").text(orderHeader.orderTotal),
                             $("<td>").append(
-                                $("<a>").attr("href", `/Order/Detail?orderId=${orderHeader.id}`)
+                                $("<a>").attr("href", `/Admin/Order/Detail?orderId=${orderHeader.id}`)
                                 .addClass("btn btn-primary btn-sm btn-edit-orderHeader ").text("Edit").data("orderHeaderData", orderHeader)
                                
                             )

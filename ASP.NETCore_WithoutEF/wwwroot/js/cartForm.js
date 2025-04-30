@@ -7,7 +7,7 @@ $("#saveCartForm").submit(function (e) {
 
     $.ajax({
         type: "POST",
-        url: '@Url.Action("Detail", "Home")', // Replace with your controller's name
+        url: 'Customer/Home/Detail', // Replace with your controller's name
         data: formData,
         success: function (response) {
             // Check if the response is successful

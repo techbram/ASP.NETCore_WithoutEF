@@ -19,7 +19,7 @@ const _productModel = {
 // Function to Products Table
 function ProductsShow() {
    //Fetch product data from the server
-    fetch("/Product/GetListProducts")
+    fetch("/Admin/Product/GetListProducts")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -34,7 +34,7 @@ function ProductsShow() {
                     $("#productsTable tbody").append(
                         $("<tr>").append(
                             $("<td>").append(
-                                $("<a>").attr("href", `/Product/Detail?id=${product.id}`) 
+                                $("<a>").attr("href", `/Admin/Product/Detail?id=${product.id}`) 
                                     .text(product.productName)
                                     .data("productData", product)
                             ),
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     ProductsShow();
 
-    fetch("/Product/GetListCategories")
+    fetch("/Admin/Product/GetListCategories")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
         })
@@ -182,7 +182,7 @@ $(document).on("click", ".btn-save-changes", function () {
     // To Save
     if (_productModel.Id == 0) {
 
-        fetch("/Product/SaveProduct", {
+        fetch("/Admin/Product/SaveProduct", {
             method: "POST",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -202,7 +202,7 @@ $(document).on("click", ".btn-save-changes", function () {
     } else {    // To Edit
 
         console.log(_productModel.Id);
-        fetch("/Product/EditProduct", {
+        fetch("/Admin/Product/EditProduct", {
             method: "PUT",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify(model)
@@ -240,7 +240,7 @@ $(document).on("click", ".btn-delete-product", function () {
 
         if (result.isConfirmed) {
 
-            fetch(`/Product/DeleteProduct?idProduct=${_product.id}`, {
+            fetch(`/Admin/Product/DeleteProduct?idProduct=${_product.id}`, {
                 method: "DELETE"
             })
                 .then(response => {
