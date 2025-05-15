@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 {
-    [Area("Customer")]
-    
+    [Area("Customer")]    
     public class CartController : Controller
     {
 
@@ -21,12 +20,8 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         private readonly IProductRepository<Product> _productRepo;
         private readonly IShoppingCartRepository<ShoppingCart> _cartRepo;
         private readonly IOrderDetailRepository<OrderDetail> _orderDetailRepo;
-        string userId = "";
+        //string userId = "";
 
-
-        //string userId = "user123";
-        //string userId = "admin123";
-        //string userId = "testcompany123";
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
         public CartController(
@@ -47,13 +42,17 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            //{
-            //    userId = HttpContext.Session.GetString("userId").ToString();
-            //}
-            
+            string userId = HttpContext.Session.GetString("UserId");          
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account", new { area = "Identity" });               
+            }
+          
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User ID not found." });
+            }
 
             ShoppingCartVM = new()
             {
@@ -71,10 +70,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 
         public async Task<IActionResult> Summary()
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            {
-                userId = HttpContext.Session.GetString("userId").ToString();
-            }
+            string userId = HttpContext.Session.GetString("UserId");
 
             ShoppingCartVM = new ShoppingCartVM()
             {
@@ -99,98 +95,21 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 
             return View(ShoppingCartVM);
         }
-
-
-        #region oldcode
-        //[HttpPost]
-        //[ActionName("Summary")]
-        //public async Task<IActionResult> SummaryPost(ShoppingCartVM shoppingCartVM)
-        //{
-        //    var usersTask = _userRepo.List();
-        //    //var cartsTask = _cartRepo.List();
-        //    var orderHeaderTask = _orderHeaderRepo.List();
-
-
-        //    await Task.WhenAll(usersTask, orderHeaderTask);
-
-        //    List<ApplicationUser> applicationUsers = usersTask.Result;
-        //    //List<ShoppingCart> shoppingCarts = cartsTask.Result;
-        //    List<OrderHeader> orderHeaders = orderHeaderTask.Result;
-
-
-        //    if (!applicationUsers.Any()) // Ensure at least one user exists
-        //    {
-        //        return BadRequest("No users found.");
-        //    }
-
-        //    var user = applicationUsers.First(); // Select a single user
-
-        //    shoppingCartVM.ShoppingCartList = await _cartRepo.List();
-
-        //    shoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
-        //    shoppingCartVM.OrderHeader.ShippingDate = DateTime.Now;
-        //    shoppingCartVM.OrderHeader.PaymentDate = DateTime.Now;
-        //    shoppingCartVM.OrderHeader.PaymentDueDate = DateTime.Now;
-
-        //    shoppingCartVM.OrderHeader.ApplicationUserId = user.Id;
-
-
-        //    foreach (var cart in shoppingCartVM.ShoppingCartList)
-        //    {
-        //        cart.Price = GetPriceBasedOnQuantity(cart);
-        //        shoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
-        //    }
-        //    if (user.CompanyId.GetValueOrDefault() == 0)
-        //    {
-        //        //Regular customer account                 
-        //        shoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
-        //        shoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
-        //    }
-        //    else
-        //    {
-        //        //company account               
-        //        shoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
-        //        shoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
-        //    }
-        //    //Below code Creating OrderHeader
-
-        //    await _orderHeaderRepo.Save(shoppingCartVM.OrderHeader);
-
-        //    //Below code Creating OrderDetail
-        //    foreach (var cart in shoppingCartVM.ShoppingCartList)
-        //    {
-
-        //        OrderDetail orderDetail = new OrderDetail()
-        //        {
-        //            ProductId = cart.Product.Id,
-        //            OrderHeaderId = 28,
-        //            Price = cart.Price,
-        //            Count = cart.Count,
-        //        };
-        //        await _orderDetailRepo.Save(orderDetail);
-
-        //    }
-        //    return RedirectToAction(nameof(OrderConfirmation), new { id = shoppingCartVM.OrderHeader.Id });
-        //    //return View(shoppingCartVM);
-        //}
-        #endregion
-
+       
 
         [HttpPost]
         [ActionName("Summary")]
         public async Task<IActionResult> SummaryPost()
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            {
-                userId = HttpContext.Session.GetString("userId").ToString();
-            }
+
+            string userId = HttpContext.Session.GetString("UserId");
 
             ShoppingCartVM.ShoppingCartList = await _cartRepo.GetCartList(userId);
 
             ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ShippingDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.PaymentDate = DateTime.Now;
-            ShoppingCartVM.OrderHeader.PaymentDueDate = DateTime.Now.AddDays(15);
+            ShoppingCartVM.OrderHeader.PaymentDueDate = DateTime.Now;
 
 
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
@@ -237,8 +156,8 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 
                 var options = new SessionCreateOptions
                 {
-                    SuccessUrl = domain + $"cart/OrderConfirmation?id={lastInsertedId}",
-                    CancelUrl = domain + "cart/Index",
+                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={lastInsertedId}",
+                    CancelUrl = domain + "customer/cart/Index",
                     LineItems = new List<SessionLineItemOptions>(),
                     Mode = "payment",
                 };
@@ -264,6 +183,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
                 Session session = service.Create(options);
 
                 await _orderHeaderRepo.UpdateStripePaymentId(lastInsertedId, session.Id, session.PaymentIntentId);
+
                 Response.Headers.Add("Location", session.Url);
 
                 return new StatusCodeResult(303);
@@ -287,10 +207,11 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
                     await _orderHeaderRepo.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
                     await _orderHeaderRepo.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
                 }
-                //HttpContext.Session.Clear();
-
+                HttpContext.Session.Clear();
             }
+            
             var result = await _cartRepo.DeleteCartItemByAppUserId(orderHeader.ApplicationUserId);
+            
             return View(id);
         }
 
@@ -298,6 +219,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         {
             var cartFromDb = await _cartRepo.GetCart(cartId);
             cartFromDb.Count += 1;
+
             await _cartRepo.Edit(cartFromDb);
 
             return RedirectToAction(nameof(Index));
@@ -306,12 +228,14 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         public async Task<IActionResult> Minus(int cartId)
         {
             var cartFromDb = await _cartRepo.GetCart(cartId);
+           
             if (cartFromDb.Count <= 1)
             {
-                //remove the cart
-                var getCartList = await _cartRepo.GetCartList(userId);
+                var getCartList = await _cartRepo.GetCartList(cartFromDb.ApplicationUserId);
+
                 HttpContext.Session.SetInt32(SD.SessionCart, getCartList.Count() - 1);
-                await _cartRepo.Delete(cartId);
+
+                await _cartRepo.Delete(cartFromDb.Id);
             }
             else
             {
@@ -325,7 +249,8 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         {
             var cartFromDb = await _cartRepo.GetCart(cartId);
 
-            var getCartList = await _cartRepo.GetCartList(userId);
+            var getCartList = await _cartRepo.GetCartList(cartFromDb.ApplicationUserId);
+
             HttpContext.Session.SetInt32(SD.SessionCart, getCartList.Count() - 1);
 
             await _cartRepo.Delete(cartId);

@@ -1,17 +1,21 @@
 ﻿
 $("#saveCartForm").submit(function (e) {
-    alert("test");
+    /*alert("test");*/
     e.preventDefault(); // Prevent default form submission
 
     var formData = $(this).serialize(); // Serialize form data
 
     $.ajax({
         type: "POST",
-        url: 'Customer/Home/Detail', // Replace with your controller's name
+        url: '@Url.Action("Detail", "Home", new { area = "Customer" })',//'Customer/Home/Detail', 
         data: formData,
         success: function (response) {
+            
+            if (response.redirect) {
+                window.location.href = response.redirectUrl
+            }
             // Check if the response is successful
-            if (response.success) {
+            else if (response.success) {
                 // SweetAlert success
                 Swal.fire({
                     icon: 'success',
@@ -36,6 +40,6 @@ $("#saveCartForm").submit(function (e) {
             });
         }
     });
-    
-        
-})
+
+
+});

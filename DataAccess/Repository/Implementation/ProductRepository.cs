@@ -8,51 +8,48 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
     public class ProductRepository : IProductRepository<Product>
     {
         private readonly string? _SQLString = "";
-       
+
         public ProductRepository(IConfiguration _configuration)
         {
-            _SQLString = _configuration.GetConnectionString("SQLString");  //Getting connection with database
+            _SQLString = _configuration.GetConnectionString("SQLString");
         }
 
-        //Method to get list of Product
         public async Task<List<Product>> GetProductList()
         {
-            List<Product> productList = new List<Product>();             // Instantiate object(Product) 
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
-            {
-                con.Open();                                              // Open Connection
+            List<Product> productList = new List<Product>();
 
-                SqlCommand cmd = new SqlCommand("sp_listProducts", con);  // Specify command store procedure
+            using (SqlConnection con = new SqlConnection(_SQLString))
+            {
+                await con.OpenAsync();
+
+                SqlCommand cmd = new SqlCommand("sp_listProducts", con);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                // Read stored data
-                using (var dr = await cmd.ExecuteReaderAsync())
-                {
-                    while (await dr.ReadAsync())
-                    {
-                        productList.Add(new Product
-                        {
-                            Id = Convert.ToInt32(dr["p_id"]),
-                            ProductName = dr["p_name"].ToString(),
-                            CategoryRef = new Category()
-                            {
-                                Id = Convert.ToInt32(dr["c_id"]),
-                                Name = dr["c_name"].ToString(),
-                                //CreatedDate = dr["CreatedDate"].ToString()
-                            },
-                            Price = Convert.ToDouble(dr["Price"]),
-                            ImageUrl = dr["ImageUrl"].ToString(),
-                            ProductDetail = dr["ProductDetail"].ToString(),
-                            DiscountPrice = Convert.ToDouble(dr["DiscountPrice"]),
-                            DateAdded = dr["DateAdded"].ToString(),
-                            ProductNumber = dr["ProductNumber"].ToString(),
-                            Originated = dr["Originated"].ToString(),
-                            Price50 = Convert.ToDouble(dr["Price50"]),
-                            Price100 = Convert.ToDouble(dr["Price100"])
-                        });
-                    }
+                SqlDataReader dr = await cmd.ExecuteReaderAsync();
 
+                while (await dr.ReadAsync())
+                {
+                    productList.Add(new Product
+                    {
+                        Id = Convert.ToInt32(dr["p_id"]),
+                        ProductName = dr["p_name"].ToString(),
+                        CategoryRef = new Category()
+                        {
+                            Id = Convert.ToInt32(dr["c_id"]),
+                            Name = dr["c_name"].ToString(),
+                        },
+                        Price = Convert.ToDouble(dr["Price"]),
+                        ImageUrl = dr["ImageUrl"].ToString(),
+                        OldImageUrl = dr["ImageUrl"].ToString(),
+                        ProductDetail = dr["ProductDetail"].ToString(),
+                        DiscountPrice = Convert.ToDouble(dr["DiscountPrice"]),
+                        DateAdded = dr["DateAdded"].ToString(),
+                        ProductNumber = dr["ProductNumber"].ToString(),
+                        Originated = dr["Originated"].ToString(),
+                        Price50 = Convert.ToDouble(dr["Price50"]),
+                        Price100 = Convert.ToDouble(dr["Price100"])
+                    });
                 }
 
             }
@@ -61,18 +58,17 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 
         public async Task<bool> Save(Product model)
         {
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                con.Open();                                              // Open Connection
+                await con.OpenAsync();
 
-                SqlCommand cmd = new SqlCommand("sp_saveProduct", con);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_saveProduct", con);
 
-                //Add parameter with value
-                //cmd.Parameters.AddWithValue("p_id", model.Id);
                 cmd.Parameters.AddWithValue("p_name", model.ProductName);
-                cmd.Parameters.AddWithValue("c_id", model.CategoryRef?.Id);
+                cmd.Parameters.AddWithValue("c_id", model.CategoryId);
                 cmd.Parameters.AddWithValue("Price", model.Price);
-                cmd.Parameters.AddWithValue("ImageUrl", model.ImageUrl);
+                //cmd.Parameters.AddWithValue("ImageUrl", model.ImageUrl);
+                cmd.Parameters.AddWithValue("ImageUrl", (object?)model.ImageUrl ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("ProductDetail", model.ProductDetail);
                 cmd.Parameters.AddWithValue("DiscountPrice", model.DiscountPrice);
                 cmd.Parameters.AddWithValue("DateAdded", model.DateAdded);
@@ -92,20 +88,17 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 
         public async Task<bool> Edit(Product model)
         {
-            using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                conn.Open();                                             // Open Connection
+                await con.OpenAsync();
 
-                SqlCommand cmd = new SqlCommand("sp_editProduct", conn);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_editProduct", con);
 
-                // Update product
-
-                //Add parameter with value
                 cmd.Parameters.AddWithValue("p_id", model.Id);
                 cmd.Parameters.AddWithValue("p_name", model.ProductName);
-                cmd.Parameters.AddWithValue("c_id", model.CategoryRef?.Id);
+                cmd.Parameters.AddWithValue("c_id", model.CategoryId);
                 cmd.Parameters.AddWithValue("Price", model.Price);
-                cmd.Parameters.AddWithValue("ImageUrl", model.ImageUrl);
+                cmd.Parameters.AddWithValue("ImageUrl", (object?)model.ImageUrl ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("ProductDetail", model.ProductDetail);
                 cmd.Parameters.AddWithValue("DiscountPrice", model.DiscountPrice);
                 cmd.Parameters.AddWithValue("DateAdded", model.DateAdded);
@@ -114,28 +107,26 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
                 cmd.Parameters.AddWithValue("Price50", model.Price50);
                 cmd.Parameters.AddWithValue("Price100", model.Price100);
 
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;    //Specify command type
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 int affected_rows = await cmd.ExecuteNonQueryAsync();
 
-                if (affected_rows > 0) { return true; }        // return type is bool(true OR false) 
+                if (affected_rows > 0) { return true; }
                 else { return false; }
             }
         }
         public async Task<Product> GetProduct(int id)
         {
             Product product = new Product();
-            //Product product = null;             // return null if no prodduct is found
 
             using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                //con.Open();
                 await con.OpenAsync();
 
                 SqlCommand cmd = new SqlCommand("sp_detailProduct", con);
 
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;   //Specify command type                
-                cmd.Parameters.AddWithValue("@ProductId", id);    //  the stored procedure takes a parameter like @p_id
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ProductId", id);
 
                 SqlDataReader dr = await cmd.ExecuteReaderAsync();
 
@@ -169,15 +160,15 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
         }
         public async Task<bool> Delete(int id)
         {
-            using (SqlConnection conn = new SqlConnection(_SQLString))   // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))   
             {
-                conn.Open();                                             // Open Connection
+                await con.OpenAsync();                                             
 
-                SqlCommand cmd = new SqlCommand("sp_deleteProdduct", conn);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_deleteProdduct", con);  
 
                 cmd.Parameters.AddWithValue("p_id", id);
 
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;    //Specify command type
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;   
 
                 int affected_rows = await cmd.ExecuteNonQueryAsync();
 
@@ -187,7 +178,7 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
             }
 
         }
-       
+
     }
 
 }

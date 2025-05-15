@@ -1,4 +1,5 @@
 ﻿using ASP.NETCore_WithoutEF.App.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -16,11 +17,18 @@ namespace App.Models.ViewModel
         [Required]
         [DataType(DataType.Password)]
         //[Compare(nameof(User.PasswordHash), ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; }        
-        public ApplicationUser User { get; set; }
-        
-        
-        //[ValidateNever]
-        //public IEnumerable<SelectListItem> CompanyList { get; set; }
+        public string ConfirmPassword { get; set; }
+
+        [ValidateNever]
+        public ApplicationUser User { get; set; }        
+
+        [ValidateNever]
+        public List<SelectListItem> RoleList { get; set; }
+
+        [ValidateNever]
+        public List<SelectListItem> CompanyList { get; set; }
+       //public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+
     }
 }

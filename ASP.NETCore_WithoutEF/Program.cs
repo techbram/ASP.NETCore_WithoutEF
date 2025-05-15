@@ -4,25 +4,17 @@ using ASP.NETCore_WithoutEF.App.DataAccess.Repository.Contract;
 using ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation;
 using ASP.NETCore_WithoutEF.App.Utility;
 using Stripe;
+using App.DataAccess.Repository.Contract;
+using App.Models;
+using App.DataAccess.Repository.Implementation;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});
-builder.Services.AddAuthentication("MyCookieAuth")
-    .AddCookie("MyCookieAuth", options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-    });
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
@@ -36,6 +28,22 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+//})
+//.AddCookie()
+//.AddFacebook(options =>
+//{
+//    options.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+//    options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];    
+//    options.CallbackPath = "/signin-facebook"; // default callback
+//    options.Fields.Add("email");
+//    options.Fields.Add("name");
+//    options.SaveTokens = true;
+//});
+
 // Add references of repositories
 builder.Services.AddScoped<ICategoryRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository<ASP.NETCore_WithoutEF.App.Models.Product>, ProductRepository>();
@@ -47,6 +55,8 @@ builder.Services.AddScoped<IApplicationUserRepository<ApplicationUser>, Applicat
 builder.Services.AddScoped<IApplicationUserRepository<ApplicationUser>, ApplicationUserRepository>();
 builder.Services.AddScoped<IShoppingCartRepository<ShoppingCart>, ShoppingCartRepository>();
 builder.Services.AddScoped<IOrderHeaderRepository<OrderHeader>, OrderHeaderRepository>();
+builder.Services.AddScoped<IRoleRepository<Role>, RoleRepository>();
+
 
 var app = builder.Build();
 

@@ -33,8 +33,7 @@ function OrderListShow(status) {
                 });
             }
             //added extra code by my self to catch error
-            else {
-                // Optional: Show a message if no products are available
+            else {               
                 $("#orderHeaderTable tbody").html("<tr><td class='text-center' colspan='7' >No Order found</td></tr>");
             }
         })
@@ -45,7 +44,7 @@ function OrderListShow(status) {
         });
 }
 
-// Function to get category name for product table
+
 document.addEventListener("DOMContentLoaded", function () {
 
    /* OrderListShow();*/

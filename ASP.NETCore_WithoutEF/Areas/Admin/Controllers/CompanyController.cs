@@ -1,52 +1,46 @@
 ﻿using ASP.NETCore_WithoutEF.App.Models;
 using ASP.NETCore_WithoutEF.App.DataAccess.Repository.Contract;
 using Microsoft.AspNetCore.Mvc;
+using ASP.NETCore_WithoutEF.App.Utility;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class CompanyController : Controller
     {
-
         private readonly ICompanyRepository<Company> _companyRepo;
 
         public CompanyController(ICompanyRepository<Company> companyRepo)
         {
-
             _companyRepo = companyRepo;
         }
         public IActionResult Index()
         {
             return View();
         }
-
-        // Method httpget to get list of category
+     
         [HttpGet]
         public async Task<IActionResult> GetListCompanies()
         {
             List<Company> companyList = await _companyRepo.GetCompanyList();
 
-            return StatusCode(StatusCodes.Status200OK, companyList);  // Return successful answer          
+            return StatusCode(StatusCodes.Status200OK, companyList);  
         }
 
-
-
-        // Method HttpPost to save the Company
         [HttpPost]
         public async Task<IActionResult> SaveCompany([FromBody] Company model)
         {
 
-            // Check if the model state is valid
             if (ModelState.IsValid)
-            {
-                // If the model is valid, save the category
+            {               
 
                 bool _result = await _companyRepo.Save(model);
 
                 if (_result)
                 {
                     return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
-
                 }
                 else
                 {
@@ -60,7 +54,6 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
         }
 
-        //Method to Edit Company
         [HttpPut]
         public async Task<IActionResult> EditCompany([FromBody] Company model)
         {
@@ -77,7 +70,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
         }
 
-        // Method httpdelete to delete Category
+    
         [HttpDelete]
         public async Task<IActionResult> DeleteCompany(int idCompany)
         {

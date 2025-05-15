@@ -10,60 +10,53 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
         private readonly string? _SQLString = "";
         public CompanyRepository(IConfiguration _configuration)
         {
-            _SQLString = _configuration.GetConnectionString("SQLString");  //Getting connection with database
+            _SQLString = _configuration.GetConnectionString("SQLString");
         }
 
-        //Method to get list of Company
         public async Task<List<Company>> GetCompanyList()
         {
-            List<Company> companyList = new List<Company>();             // Instantiate object(Product) 
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
-            {
-                con.Open();                                              // Open Connection
+            List<Company> companyList = new List<Company>();
 
-                SqlCommand cmd = new SqlCommand("sp_getCompanyList", con);  // Specify command store procedure
+            using (SqlConnection con = new SqlConnection(_SQLString))
+            {
+                await con.OpenAsync();
+
+                SqlCommand cmd = new SqlCommand("sp_getCompanyList", con);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                // Read stored data
-                using (var dr = await cmd.ExecuteReaderAsync())
+                SqlDataReader dr = await cmd.ExecuteReaderAsync();
+
+                while (await dr.ReadAsync())
                 {
-                    while (await dr.ReadAsync())
+                    companyList.Add(new Company
                     {
-                        companyList.Add(new Company
-                        {
-                            Id = Convert.ToInt32(dr["Id"]),
-                            Name = dr["Name"].ToString(),
-                            StreetAddress = dr["StreetAddress"].ToString(),
-                            City = dr["City"].ToString(),
-                            State = dr["State"].ToString(),
-                            PostalCode = dr["PostalCode"].ToString(),
-                            PhoneNumber = dr["PhoneNumber"].ToString()
+                        Id = Convert.ToInt32(dr["Id"]),
+                        Name = dr["Name"].ToString(),
+                        StreetAddress = dr["StreetAddress"].ToString(),
+                        City = dr["City"].ToString(),
+                        State = dr["State"].ToString(),
+                        PostalCode = dr["PostalCode"].ToString(),
+                        PhoneNumber = dr["PhoneNumber"].ToString()
 
-                        });
-                    }
-
+                    });
                 }
 
             }
             return companyList;
         }
 
-        //Method to update company
         public async Task<bool> Edit(Company model)
         {
-            
-            using (SqlConnection con = new SqlConnection(_SQLString))    
-            {
-                con.Open();                                             
 
-                SqlCommand cmd = new SqlCommand("sp_editCompany", con);  
+            using (SqlConnection con = new SqlConnection(_SQLString))
+            {
+                await con.OpenAsync();
+
+                SqlCommand cmd = new SqlCommand("sp_editCompany", con);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                // Update Company
-
-                //Add parameter with value
                 cmd.Parameters.AddWithValue("Id", model.Id);
                 cmd.Parameters.AddWithValue("Name", model.Name);
                 cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
@@ -74,21 +67,20 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 
                 int affected_rows = await cmd.ExecuteNonQueryAsync();
 
-                if (affected_rows > 0) { return true; }        // return type is bool(true OR false) 
+                if (affected_rows > 0) { return true; }
                 else { return false; }
 
             }
         }
 
-        //Method to Save Company
         public async Task<bool> Save(Company model)
         {
-            using (SqlConnection con = new SqlConnection(_SQLString))    
+            using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                con.Open();                                             
+                await con.OpenAsync();
 
-                SqlCommand cmd = new SqlCommand("sp_saveCompany", con);     
-                
+                SqlCommand cmd = new SqlCommand("sp_saveCompany", con);
+
                 cmd.Parameters.AddWithValue("Name", model.Name);
                 cmd.Parameters.AddWithValue("StreetAddress", model.StreetAddress);
                 cmd.Parameters.AddWithValue("City", model.City);
@@ -100,20 +92,19 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 
                 int affected_rows = await cmd.ExecuteNonQueryAsync();
 
-                if (affected_rows > 0) { return true; }        // return type is bool(true OR false) 
+                if (affected_rows > 0) { return true; }
                 else { return false; }
 
             }
         }
 
-        //Method to Delete Company
         public async Task<bool> Delete(int id)
         {
-            using (SqlConnection con = new SqlConnection(_SQLString))    // Create connection
+            using (SqlConnection con = new SqlConnection(_SQLString))
             {
-                con.Open();                                              // Open Connection
+                await con.OpenAsync();
 
-                SqlCommand cmd = new SqlCommand("sp_deleteCompany", con);  // Specify command store procedure
+                SqlCommand cmd = new SqlCommand("sp_deleteCompany", con);
 
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -121,7 +112,7 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 
                 int affected_rows = await cmd.ExecuteNonQueryAsync();
 
-                if (affected_rows > 0) { return true; }        // return type is bool(true OR false) 
+                if (affected_rows > 0) { return true; }
                 else { return false; }
             }
         }

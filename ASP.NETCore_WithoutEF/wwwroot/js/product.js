@@ -4,7 +4,7 @@ const _productModel = {
     Id: 0,
     ProductName: "",
     ProductNumber: "",
-    Originated : "",
+    Originated: "",
     CategoryRef: 0,
     ProductDetail: "",
     Price: 0,
@@ -18,7 +18,7 @@ const _productModel = {
 
 // Function to Products Table
 function ProductsShow() {
-   //Fetch product data from the server
+    //Fetch product data from the server
     fetch("/Admin/Product/GetListProducts")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response)
@@ -34,7 +34,7 @@ function ProductsShow() {
                     $("#productsTable tbody").append(
                         $("<tr>").append(
                             $("<td>").append(
-                                $("<a>").attr("href", `/Admin/Product/Detail?id=${product.id}`) 
+                                $("<a>").attr("href", `/Admin/Product/Detail?id=${product.id}`)
                                     .text(product.productName)
                                     .data("productData", product)
                             ),
@@ -51,7 +51,7 @@ function ProductsShow() {
                     );
                 });
             }
-             //added extra code by my self to catch error
+            //added extra code by my self to catch error
             else {
                 // Optional: Show a message if no products are available
                 $("#productsTable tbody").html("<tr><td colspan='4'>No products found</td></tr>");
@@ -66,7 +66,7 @@ function ProductsShow() {
 
 // Function to get category name for product table
 document.addEventListener("DOMContentLoaded", function () {
-    
+
     ProductsShow();
 
     fetch("/Admin/Product/GetListCategories")
@@ -100,9 +100,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 }, false)
 
- //Function to Show modal
-function ModalShow() {
-   
+//Function to Show modal
+function ModalShow() {    
     $("#txtName").val(_productModel.ProductName);
     $("#txtProductNum").val(_productModel.ProductNumber);
     $("#txtOrigin").val(_productModel.Originated);
@@ -113,8 +112,8 @@ function ModalShow() {
     $("#numPrice100").val(_productModel.Price100);
     $("#numDiscount").val(_productModel.DiscountPrice);
     $("#txtDate").val(_productModel.DateAdded);
-    $("#txtImage").val(_productModel.ImageUrl);
-   
+    alert(_productModel.OldImageUrl + '  inside ModalShow');
+    $("#hiddenImageUrl").val(_productModel.OldImageUrl);    
     $("#productModal").modal("show");
 }
 
@@ -129,19 +128,21 @@ $(document).on("click", ".btn-new-product", function () {
     _productModel.ProductDetail = "";
     _productModel.Price = 0;
     _productModel.Price50 = 0;
-    _productModel.Price100 = 0;   
+    _productModel.Price100 = 0;
     _productModel.DiscountPrice = 0;
     _productModel.DateAdded = "";
     _productModel.ImageUrl = "";
 
     ModalShow();
-})
+});
 
 
 // Show edit product modal on button click
-$(document).on("click", ".btn-edit-product", function () {
-    const _product = $(this).data("productData");
+$(document).on("click", ".btn-edit-product", function () {   
 
+    const _product = $(this).data("productData");
+    alert(_product.imageUrl + '   old url from db');
+    
     _productModel.Id = _product.id;
     _productModel.ProductName = _product.productName;
     _productModel.ProductNumber = _product.productNumber;
@@ -150,42 +151,55 @@ $(document).on("click", ".btn-edit-product", function () {
     _productModel.ProductDetail = _product.productDetail;
     _productModel.Price = _product.price;
     _productModel.Price50 = _product.price50;
-    _productModel.Price100 = _product.price100;    
+    _productModel.Price100 = _product.price100;
     _productModel.DiscountPrice = _product.discountPrice;
     _productModel.DateAdded = _product.dateAdded;
-    _productModel.ImageUrl = _product.imageUrl;
+    _productModel.ImageUrl = _product.imageUrl;  
+    _productModel.OldImageUrl = _product.imageUrl;
+    
+    //if (_productModel != null) {
+    //    if (_productModel.ImageUrl != null) {
+    //        _productModel.ImageUrl = _product.imageUrl;
+    //    }
+    //}
 
     ModalShow();
-})
+});
 
 
 // Action for Save and Edit product
-$(document).on("click", ".btn-save-changes", function () {
+$(document).on("click", ".btn-save-changes", function () {    
+    const formData = new FormData();
 
-    const model = {
-        id: _productModel.Id,
-        productName: $("#txtName").val(),
-        productNumber: $("#txtProductNum").val(),
-        originated: $("#txtOrigin").val(),
-        categoryRef: {
-            id: $("#selectCategory").val()
-        },
-        productDetail: $("#txtDetail").val(),
-        price: $("#numPrice").val(),    
-        price50: $("#numPrice50").val(),
-        price100: $("#numPrice100").val(),
-        discountPrice: $("#numDiscount").val(),
-        dateAdded: $("#txtDate").val(),  
-        imageUrl: $("#txtImage").val(),
-    }
+    formData.append("Id", _productModel.Id);
+    formData.append("ProductName", $("#txtName").val());
+    formData.append("ProductNumber", $("#txtProductNum").val());
+    formData.append("Originated", $("#txtOrigin").val());
+    formData.append("CategoryId", $("#selectCategory").val());
+    formData.append("ProductDetail", $("#txtDetail").val());
+    formData.append("Price", $("#numPrice").val());
+    formData.append("Price50", $("#numPrice50").val());
+    formData.append("Price100", $("#numPrice100").val());
+    formData.append("DiscountPrice", $("#numDiscount").val());
+    formData.append("DateAdded", $("#txtDate").val());
+    //const imageURL = document.getElementById("hiddenImageUrl").value;
+    alert($('input#hiddenImageUrl').val() + 'url while submitting the info..');
+    formData.append("OldImageUrl", $('input#hiddenImageUrl').val());    
+
+  
+
+    const imageFile = document.getElementById("imageFile");
+    if (imageFile.files.length > 0) {
+        formData.append("ImageFile", imageFile.files[0]);
+    }    
+
 
     // To Save
     if (_productModel.Id == 0) {
 
         fetch("/Admin/Product/SaveProduct", {
             method: "POST",
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify(model)
+            body: formData
         })
             .then(response => {
                 return response.ok ? response.json() : Promise.reject(response);
@@ -198,29 +212,33 @@ $(document).on("click", ".btn-save-changes", function () {
                 } else {
                     Swal.fire("Error!", "The product could not be created", "error");
                 }
-            })
-    } else {    // To Edit
+            });
+    }
+    else {    // To Edit
 
         console.log(_productModel.Id);
-        fetch("/Admin/Product/EditProduct", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify(model)
-        })
-            .then(response => {
-                return response.ok ? response.json() : Promise.reject(response)
+
+        if (_productModel.ImageUrl != null) {
+            fetch("/Admin/Product/EditProduct", {
+                method: "PUT",
+                body: formData
             })
-            .then(responseJson => {
-                if (responseJson.value) {
-                    $("#productModal").modal("hide");
-                    Swal.fire("Done", "The product was edited successfully", "success");
-                    ProductsShow();
-                } else {
-                    Swal.fire("Error", "The user product not be edited", "error");
-                }
-            })
+                .then(response => {
+                    return response.ok ? response.json() : Promise.reject(response)
+                })
+                .then(responseJson => {
+
+                    if (responseJson.value) {
+                        $("#productModal").modal("hide");
+                        Swal.fire("Done", "The product was edited successfully", "success");
+                        ProductsShow();
+                    } else {
+                        Swal.fire("Error", "The user product not be edited", "error");
+                    }
+                });
+        }
     }
-})
+});
 
 // Show alert delete employee on button click
 $(document).on("click", ".btn-delete-product", function () {

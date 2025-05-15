@@ -11,13 +11,12 @@ using Stripe.Checkout;
 namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class OrderController : Controller
     {
         private readonly IOrderHeaderRepository<OrderHeader> _orderHeaderRepo;
         private readonly IOrderDetailRepository<OrderDetail> _orderDetailRepo;
-        //string userId = "user123";
-        //string userId = "admin123";
-        //string userId = "testcompany123";
+        
         [BindProperty]
         public OrderVM OrderVM { get; set; }
         public OrderController(IOrderHeaderRepository<OrderHeader> orderHeaderRepo, IOrderDetailRepository<OrderDetail> orderDetailRepo)
@@ -34,7 +33,6 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
         public async Task<IActionResult> GetListOrderHeaders(string status)
         {
             IEnumerable<OrderHeader> objOrderHeaders = await _orderHeaderRepo.GetListOrderHeader();
-
 
             switch (status)
             {
@@ -96,6 +94,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Detail), new { orderId = orderHeaderFromDb.Id });
         }
+
         [HttpPost]
         public async Task<IActionResult> StartProcessing()
         {
@@ -103,6 +102,8 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Detail), new { orderId = OrderVM.OrderHeader.Id });
         }
+
+
         [HttpPost]
         public async Task<IActionResult> ShipOrder()
         {
@@ -119,6 +120,8 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Detail), new { orderId = OrderVM.OrderHeader.Id });
         }
+
+
         [HttpPost]
         public async Task<IActionResult> CancleOrder()
         {
@@ -148,6 +151,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
         }
 
+
         [ActionName("Detail")]
         [HttpPost]
         public async Task<IActionResult> Details_PAY_NOW()
@@ -155,13 +159,15 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
             OrderVM.OrderHeader = await _orderHeaderRepo.GetOrderHeader(OrderVM.OrderHeader.Id);
 
             OrderVM.OrderDetailList = await _orderDetailRepo.GetOrderDetail(OrderVM.OrderHeader.Id);
+
             var orderheaderId = OrderVM.OrderHeader.Id;
+
             //stripe logic
             var domain = "https://localhost:7290/";
             var options = new SessionCreateOptions
             {
-                SuccessUrl = domain + $"order/PaymentConfirmation?orderHeaderId={orderheaderId}",
-                CancelUrl = domain + $"order/detail?orderId={orderheaderId}",
+                SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={orderheaderId}",
+                CancelUrl = domain + $"admin/order/detail?orderId={orderheaderId}",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
             };
@@ -190,8 +196,10 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
             await _orderHeaderRepo.UpdateStripePaymentId(OrderVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
 
             Response.Headers.Add("Location", session.Url);
+
             return new StatusCodeResult(303);
         }
+
         public async Task<IActionResult> PaymentConfirmation(int orderHeaderId)
         {
             OrderHeader orderHeader = await _orderHeaderRepo.GetOrderHeader(orderHeaderId);

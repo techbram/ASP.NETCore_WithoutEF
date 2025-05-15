@@ -18,14 +18,9 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         private readonly IProductRepository<Product> _productRepo;
         private readonly IShoppingCartRepository<ShoppingCart> _cartRepo;
         private readonly IApplicationUserRepository<ApplicationUser> _userRepo;
-        string userId = "";
-
-
-        //string userId = "user123";
-        //string userId = "admin123";
-        //string userId = "testcompany123";
-        public HomeController(IProductRepository<Product> productRepo, 
-            IShoppingCartRepository<ShoppingCart> cartRepo, 
+        //string userId = "";
+        public HomeController(IProductRepository<Product> productRepo,
+            IShoppingCartRepository<ShoppingCart> cartRepo,
             IApplicationUserRepository<ApplicationUser> userRepo)
         {
             _productRepo = productRepo;
@@ -35,13 +30,14 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            //{
-            //    userId = HttpContext.Session.GetString("userId").ToString();
-            //}
+            string userId = HttpContext.Session.GetString("UserId");
 
+            if (userId != null)
+            {
+                HttpContext.Session.SetInt32(SD.SessionCart, (await _cartRepo.GetCartList(userId)).Count());
+            }
             List<Product> productList = await _productRepo.GetProductList();
-           
+
             return View(productList);
         }
 
@@ -49,73 +45,51 @@ namespace ASP.NETCore_WithoutEF.Areas.Customer.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
-            //if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            //{
-            //    userId = HttpContext.Session.GetString("userId").ToString();
-            //}
-
-            ShoppingCart cart = new ShoppingCart()
+            ShoppingCart shoppingCart = new ShoppingCart()
             {
                 Product = await _productRepo.GetProduct(id),
                 Count = 1,
                 ProductId = id
             };
 
-            return View(cart);
+            return View(shoppingCart);
         }
 
 
         [HttpPost]
         [ActionName("Detail")]
-        //[Authorize]
         public async Task<IActionResult> DetailAddToCart(ShoppingCart shoppingCart)
         {
-            if (!User.Identity.IsAuthenticated)
+            string userId = HttpContext.Session.GetString("UserId");
+
+            if (userId == null)
             {
-                return Json(new { success = false, message = "Please log in to add items to your cart." });
+                return Json(new
+                {
+                    success = false,
+                    message = "Please login to add item!",
+                    redirectUrl = Url.Action("Login", "Account", new { area = "Identity" }) // or wherever you want
+                });
+                //return RedirectToAction("Login", "Account", new { area = "Identity" });
             }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Json(new { success = false, message = "User ID not found." });
-            }
-
-            shoppingCart.ApplicationUserId = userId;
+            shoppingCart.ApplicationUserId = userId;            
 
             bool _result = await _cartRepo.Save(shoppingCart);
-            var getCartList = await _cartRepo.GetCartList(userId);
 
-            HttpContext.Session.SetInt32(SD.SessionCart, getCartList.Count());
+            HttpContext.Session.SetInt32(SD.SessionCart, (await _cartRepo.GetCartList(userId)).Count());
 
             if (_result)
             {
-                return Json(new { success = true, message = "Cart saved successfully!" });
+                return Json(new
+                {
+                    success = true,
+                    message = "Item added to cart!",
+                    //redirectUrl = Url.Action("Index", "Home", new { area = "Customer" }) // or wherever you want
+                });
             }
 
             return Json(new { success = false, message = "An error occurred while saving the cart!" });
-
-            //if (!string.IsNullOrEmpty(HttpContext.Session.GetString("userId")))
-            //{
-            //    userId = HttpContext.Session.GetString("userId").ToString();
-            //}
-            //shoppingCart.ApplicationUserId = userId;
-
-            //bool _result = await _cartRepo.Save(shoppingCart);
-
-            //var getCartList = await _cartRepo.GetCartList(userId);
-
-            //HttpContext.Session.SetInt32(SD.SessionCart, getCartList.Count());
-
-            //if (_result)
-            //{
-            //    // Return a success response
-            //    return Json(new { success = true, message = "Cart saved successfully!" });
-
-            //}
-            //// Return an error response
-            //return Json(new { success = false, message = "An error occurred while saving the cart!" });
 
         }
 

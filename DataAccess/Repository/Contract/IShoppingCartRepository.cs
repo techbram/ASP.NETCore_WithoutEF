@@ -15,7 +15,8 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Contract
         Task<bool> Delete(int id);
 
         Task<bool> DeleteCartItemByAppUserId(string id);
+        //Task<T> GetCart(string applicationUserId);
 
-        
+
     }
 }

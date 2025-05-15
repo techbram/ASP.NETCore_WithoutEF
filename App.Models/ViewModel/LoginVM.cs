@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,7 @@ namespace App.Models.ViewModel
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-
+        //public IList<AuthenticationScheme> ExternalLogins { get; set; }
         //public string ApplicationUserId { get; set; }
     }
 }

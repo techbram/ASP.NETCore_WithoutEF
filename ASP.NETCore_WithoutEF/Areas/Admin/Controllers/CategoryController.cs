@@ -2,10 +2,13 @@
 using ASP.NETCore_WithoutEF.App.DataAccess.Repository.Contract;
 using Microsoft.AspNetCore.Mvc;
 using ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation;
+using ASP.NETCore_WithoutEF.App.Utility;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
 
@@ -20,31 +23,27 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
         {
             return View();
         }
-
-        // Method httpget to get list of category
+             
         [HttpGet]
         public async Task<IActionResult> GetListCategories()
         {
             List<Category> categoryList = await _categoryRepo.GetCategoryList();
 
-            return StatusCode(StatusCodes.Status200OK, categoryList);  // Return successful answer          
+            return StatusCode(StatusCodes.Status200OK, categoryList);    
         }
-
-        // Method HttpPost to save the Category
+                
         [HttpPost]
         public async Task<IActionResult> SaveCategory([FromBody] Category model)
         {
 
-            // Check if the model state is valid
+            
             if (ModelState.IsValid)
             {
-                // If the model is valid, save the category
                 bool _result = await _categoryRepo.SaveCategory(model);
 
                 if (_result)
                 {
                     return StatusCode(StatusCodes.Status200OK, new { value = _result, msg = "ok" });
-
                 }
                 else
                 {
@@ -58,7 +57,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
 
         }
 
-        //Method to Edit Category
+       
         [HttpPut]
         public async Task<IActionResult> EditCategory([FromBody] Category model)
         {
@@ -74,8 +73,7 @@ namespace ASP.NETCore_WithoutEF.Areas.Admin.Controllers
             }
 
         }
-
-        // Method httpdelete to delete Category
+      
         [HttpDelete]
         public async Task<IActionResult> DeleteCategory(int idCategory)
         {

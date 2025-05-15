@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ASP.NETCore_WithoutEF.App.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser 
     {
         [Key]
         public string Id { get; set; }
@@ -30,14 +30,13 @@ namespace ASP.NETCore_WithoutEF.App.Models
 
         public string? PostalCode { get; set; }
 
-        public int? CompanyId { get; set; } = 1;
+        public int? CompanyId { get; set; }
 
-        [ForeignKey("CompanyId")]
-        [ValidateNever]
-        public Company CompanyRef { get; set; }
+        //[ForeignKey("CompanyId")]
+        //[ValidateNever]
+        //public Company CompanyRef { get; set; }
 
-        //public string? NormalizedUserName { get; set; }
-        //public byte EmailConfirmed { get; set; }
-        
+        public string? RoleId { get; set; } 
+
     }
 }

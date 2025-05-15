@@ -3,6 +3,7 @@
 <form method="post" id="saveCartForm">
    
     <input asp-for="ProductId"  hidden />
+    <input asp-for="@Model.Product.ImageUrl" hidden />
     @* <input asp-for ="ApplicationUserId" id="appUserId" hidden/> *@
     <div class="card shadow border-0 mt-4 mb-4" >
         <div class="card-header bg-primary bg-gradient text-light py-4">
@@ -89,7 +90,9 @@
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
                                 <button type="submit"
-                                        class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-semibold" id="btn-add-cart">
+                                        class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-semibold"
+                                        onclick="addToCart()"
+                                        id="btn-add-cart">
                                     Add to Cart
                                 </button>
                             </div>

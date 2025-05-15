@@ -31,6 +31,10 @@ namespace ASP.NETCore_WithoutEF.App.Models
         [Display(Name = "Image")]
         public string? ImageUrl { get; set; }
 
+        [ValidateNever]        
+        public string? OldImageUrl { get; set; } = string.Empty;
+
+
         public string? ProductDetail { get; set; }
 
 
