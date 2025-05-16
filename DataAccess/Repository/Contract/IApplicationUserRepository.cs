@@ -9,6 +9,7 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Contract
         Task<T> GetUser(string userId);
         Task<UserInfo> ValidateUser(string email, string password );
         Task<string> SaveUserAndReturnId(T model);
+        Task<List<T>> GetUserList();
 
 
         //Task<bool> AssignRoleToUser(string userId, string roleId);

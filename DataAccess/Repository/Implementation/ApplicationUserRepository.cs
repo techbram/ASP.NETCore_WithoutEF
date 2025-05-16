@@ -7,7 +7,7 @@ using System.ComponentModel.Design;
 using System.Data;
 using Microsoft.IdentityModel.Tokens;
 using App.Models.ViewModel;
-
+using App.Models;
 
 namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
 {
@@ -60,6 +60,43 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
             }
 
             return user;
+        }
+
+        public async Task<List<ApplicationUser>> GetUserList()
+        {
+            List<ApplicationUser> userList = new List<ApplicationUser>();
+
+            using (SqlConnection con = new SqlConnection(_SQLString))
+            {
+                await con.OpenAsync();
+
+                SqlCommand cmd = new SqlCommand("sp_getListApplicationUsers", con);
+
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                SqlDataReader dr = await cmd.ExecuteReaderAsync();
+
+                while (await dr.ReadAsync())
+                {
+                    userList.Add(new ApplicationUser
+                    {
+                        Name = dr["UserName"].ToString(),
+                        Email = dr["Email"].ToString(),                                            
+                        PhoneNumber = dr["PhoneNumber"].ToString(),
+                        CompanyRef = new Company
+                        {
+                            Name = dr["Company"].ToString()
+                        },
+                        RoleRef = new Role
+                        {
+                            Name = dr["GivenRole"].ToString()
+                        }
+                                                
+                    });
+                }
+
+            }
+            return userList;
         }
 
         //public async Task<bool> SaveUser(ApplicationUser model)
@@ -122,7 +159,8 @@ namespace ASP.NETCore_WithoutEF.App.DataAccess.Repository.Implementation
                 cmd.Parameters.AddWithValue("PhoneNumberConfirmed", false);
                 cmd.Parameters.AddWithValue("TwoFactorEnabled", false);
 
-                cmd.Parameters.AddWithValue("LockoutEnabled", false);
+                cmd.Parameters.AddWithValue("LockoutEnabled", model.LockoutEnabled);
+                cmd.Parameters.AddWithValue("LockoutEnd", model.LockoutEnd);
                 cmd.Parameters.AddWithValue("AccessFailedCount", 0);
                 cmd.Parameters.AddWithValue("Name", model.Name);
 

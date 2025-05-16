@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using App.Models;
 
 
 namespace ASP.NETCore_WithoutEF.App.Models
@@ -30,11 +31,17 @@ namespace ASP.NETCore_WithoutEF.App.Models
 
         public string? PostalCode { get; set; }
 
+        public byte LockoutEnabled { get; set; }
+        public DateTimeOffset? LockoutEnd { get; set; }
         public int? CompanyId { get; set; }
 
-        //[ForeignKey("CompanyId")]
-        //[ValidateNever]
-        //public Company CompanyRef { get; set; }
+        [ForeignKey("CompanyId")]
+        [ValidateNever]
+        public Company? CompanyRef { get; set; }
+
+        [ForeignKey("RoleId")]
+        [ValidateNever]
+        public Role? RoleRef { get; set; }
 
         public string? RoleId { get; set; } 
 
